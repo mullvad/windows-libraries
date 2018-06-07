@@ -21,9 +21,12 @@
   <ItemGroup>
     <ClCompile Include="applicationrunner.cpp" />
     <ClCompile Include="binarycomposer.cpp" />
+    <ClCompile Include="com.cpp" />
     <ClCompile Include="error.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="network.cpp" />
+    <ClCompile Include="serialization\deserializer.cpp" />
+    <ClCompile Include="serialization\serializer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -31,19 +34,37 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="string.cpp" />
+    <ClCompile Include="wmi\connection.cpp" />
+    <ClCompile Include="wmi\eventdispatcher.cpp" />
+    <ClCompile Include="wmi\methodcall.cpp" />
+    <ClCompile Include="wmi\notification.cpp" />
+    <ClCompile Include="wmi\resultset.cpp" />
+    <ClCompile Include="wmi\wmi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
     <ClInclude Include="binarycomposer.h" />
     <ClInclude Include="buffer.h" />
+    <ClInclude Include="com.h" />
     <ClInclude Include="error.h" />
     <ClInclude Include="guid.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="network.h" />
+    <ClInclude Include="serialization\deserializer.h" />
+    <ClInclude Include="serialization\serializer.h" />
+    <ClInclude Include="serialization\typetag.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="wmi\connection.h" />
+    <ClInclude Include="wmi\eventdispatcher.h" />
+    <ClInclude Include="wmi\iconnection.h" />
+    <ClInclude Include="wmi\ieventsink.h" />
+    <ClInclude Include="wmi\methodcall.h" />
+    <ClInclude Include="wmi\notification.h" />
+    <ClInclude Include="wmi\resultset.h" />
+    <ClInclude Include="wmi\wmi.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -126,6 +147,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +166,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,6 +187,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,6 +210,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
