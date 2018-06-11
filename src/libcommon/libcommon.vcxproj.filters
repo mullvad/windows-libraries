@@ -33,6 +33,7 @@
     <ClCompile Include="wmi\wmi.cpp">
       <Filter>wmi</Filter>
     </ClCompile>
+    <ClCompile Include="filesystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -80,6 +81,7 @@
     <ClInclude Include="wmi\wmi.h">
       <Filter>wmi</Filter>
     </ClInclude>
+    <ClInclude Include="filesystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">

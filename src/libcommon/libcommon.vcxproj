@@ -23,6 +23,7 @@
     <ClCompile Include="binarycomposer.cpp" />
     <ClCompile Include="com.cpp" />
     <ClCompile Include="error.cpp" />
+    <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="serialization\deserializer.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="buffer.h" />
     <ClInclude Include="com.h" />
     <ClInclude Include="error.h" />
+    <ClInclude Include="filesystem.h" />
     <ClInclude Include="guid.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="memory.h" />
