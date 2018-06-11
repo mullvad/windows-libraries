@@ -19,7 +19,7 @@ public:
 
     static void DoTrace(const wchar_t *sender, const wchar_t *message);
 
-	static void RegisterSink(ITraceSink *sink);
+    static void RegisterSink(ITraceSink *sink);
 
     static bool HasSink();
 

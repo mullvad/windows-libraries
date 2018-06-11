@@ -10,7 +10,7 @@ void ConsoleTraceSink::trace(const wchar_t *sender, const wchar_t *message)
     //
     // There won't be much gain in locking since we don't control wcout anyway.
     //
-	std::wcout << sender << L": " << message << std::endl;
+    std::wcout << sender << L": " << message << std::endl;
 }
 
 }
