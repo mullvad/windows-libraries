@@ -34,6 +34,15 @@
       <Filter>wmi</Filter>
     </ClCompile>
     <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="trace\consoletracesink.cpp">
+      <Filter>trace</Filter>
+    </ClCompile>
+    <ClCompile Include="trace\filetracesink.cpp">
+      <Filter>trace</Filter>
+    </ClCompile>
+    <ClCompile Include="trace\trace.cpp">
+      <Filter>trace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -82,6 +91,22 @@
       <Filter>wmi</Filter>
     </ClInclude>
     <ClInclude Include="filesystem.h" />
+    <ClInclude Include="macroargument.h" />
+    <ClInclude Include="trace\consoletracesink.h">
+      <Filter>trace</Filter>
+    </ClInclude>
+    <ClInclude Include="trace\filetracesink.h">
+      <Filter>trace</Filter>
+    </ClInclude>
+    <ClInclude Include="trace\itracesink.h">
+      <Filter>trace</Filter>
+    </ClInclude>
+    <ClInclude Include="trace\trace.h">
+      <Filter>trace</Filter>
+    </ClInclude>
+    <ClInclude Include="trace\xtrace.h">
+      <Filter>trace</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">
@@ -89,6 +114,9 @@
     </Filter>
     <Filter Include="serialization">
       <UniqueIdentifier>{60530505-2146-473a-92fc-9c1883cfaa88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="trace">
+      <UniqueIdentifier>{0c82bd88-7f1d-4a6c-b5e7-440e9b5dc96a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
