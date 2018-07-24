@@ -78,27 +78,34 @@ bool ApplicationRunner::read(std::string &data, size_t maxChars, size_t timeout)
 		(HANDLE)_beginthreadex(nullptr, 0, &ApplicationRunner::ReadThread, &parameters, 0, nullptr)
 	));
 
-	if (WAIT_OBJECT_0 == WaitForSingleObject(*thread, static_cast<DWORD>(timeout)))
+	if (WAIT_OBJECT_0 != WaitForSingleObject(*thread, static_cast<DWORD>(timeout)))
 	{
-		return true;
+		//
+		// Timeout reached.
+		//
+		// Becauses the read may not yet have been registered on the other thread
+		// we can't simply request to cancel the read and wait for the thread.
+		//
+		// We're forced to repeatedly cancel outstanding IO until the thread
+		// acknowledges that it's done attempting to read.
+		//
+
+		do
+		{
+			CancelSynchronousIo(*thread);
+		}
+		while (WAIT_OBJECT_0 != WaitForSingleObject(*readCompletedEvent, 50));
+
+		WaitForSingleObject(*thread, INFINITE);
 	}
 
-	//
-	// Timeout reached.
-	//
-	// Becauses the read may not yet have been registered on the other thread
-	// we can't simply request to cancel the read and wait for the thread.
-	//
-	// We're forced to repeatedly cancel outstanding IO until the thread
-	// acknowledges that it's done attempting to read.
-	//
+	DWORD exitCode;
 
-	do
+	if (FALSE != GetExitCodeThread(*thread, &exitCode))
 	{
-		CancelSynchronousIo(*thread);
-	} while (WAIT_OBJECT_0 != WaitForSingleObject(*readCompletedEvent, 50));
+		return static_cast<bool>(exitCode);
+	}
 
-	WaitForSingleObject(*thread, INFINITE);
 	return false;
 }
 
