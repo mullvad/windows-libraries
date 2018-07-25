@@ -32,6 +32,6 @@ namespace common::error {
 std::wstring FormatWindowsError(DWORD errorCode);
 std::string FormatWindowsErrorPlain(DWORD errorCode);
 
-void Throw(const char *operation, DWORD errorCode);
+__declspec(noreturn) void Throw(const char *operation, DWORD errorCode);
 
 }
