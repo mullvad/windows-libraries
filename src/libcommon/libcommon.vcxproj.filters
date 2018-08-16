@@ -43,6 +43,9 @@
     <ClCompile Include="trace\trace.cpp">
       <Filter>trace</Filter>
     </ClCompile>
+    <ClCompile Include="fileenumerator.cpp" />
+    <ClCompile Include="security.cpp" />
+    <ClCompile Include="process.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -107,6 +110,9 @@
     <ClInclude Include="trace\xtrace.h">
       <Filter>trace</Filter>
     </ClInclude>
+    <ClInclude Include="fileenumerator.h" />
+    <ClInclude Include="security.h" />
+    <ClInclude Include="process.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">

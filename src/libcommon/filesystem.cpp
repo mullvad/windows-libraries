@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "filesystem.h"
 #include "string.h"
+#include "error.h"
 #include <stdexcept>
 
 namespace common::fs
@@ -106,6 +107,57 @@ std::wstring GetFilename(const std::wstring &filepath)
     }
 
     return filepath.substr(lastSlash + 1);
+}
+
+std::wstring MakePath(const std::wstring &directory, const std::wstring &file)
+{
+	if (directory.empty()
+		|| file.empty())
+	{
+		throw std::runtime_error("Invalid (missing) directory name or file name");
+	}
+
+	std::wstring result(directory);
+
+	if (L'\\' != *result.rbegin()
+		&& L'/' != *result.rbegin())
+	{
+		result.push_back(L'\\');
+	}
+
+	result.append(file);
+
+	return result;
+}
+
+std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE userToken)
+{
+	PWSTR folder;
+
+	const auto status = SHGetKnownFolderPath(folderId, flags, userToken, &folder);
+
+	if (S_OK == status)
+	{
+		std::wstring result(folder);
+
+		CoTaskMemFree(folder);
+
+		return result;
+	}
+
+	throw std::runtime_error("Failed to retrieve \"known folder\" path");
+}
+
+ScopedNativeFileSystem::ScopedNativeFileSystem()
+{
+	const auto status = Wow64DisableWow64FsRedirection(&m_context);
+	THROW_GLE_IF(FALSE, status, "Disable file system redirection");
+}
+
+ScopedNativeFileSystem::~ScopedNativeFileSystem()
+{
+	const auto status = Wow64RevertWow64FsRedirection(m_context);
+	THROW_GLE_IF(FALSE, status, "Revert file system redirection");
 }
 
 }
