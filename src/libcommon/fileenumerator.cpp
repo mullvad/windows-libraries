@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "fileenumerator.h"
 #include "filesystem.h"
-#include <stdexcept>
+#include <experimental/filesystem>
 
 namespace common::fs
 {
@@ -14,9 +14,11 @@ FileEnumerator::FileEnumerator(const std::wstring &directory)
 FileEnumerator::FileEnumerator(const std::wstring &directory, const std::wstring objectMask)
 	: m_directory(directory)
 {
+	const auto findspec = std::experimental::filesystem::path(directory).append(objectMask);
+
 	m_enumHandle = FindFirstFileW
 	(
-		std::wstring(L"\\\\?\\").append(common::fs::MakePath(directory, objectMask)).c_str(),
+		std::wstring(L"\\\\?\\").append(findspec).c_str(),
 		&m_cached
 	);
 

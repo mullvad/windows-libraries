@@ -2,22 +2,26 @@
 #include "filetracesink.h"
 #include "libcommon/filesystem.h"
 #include "libcommon/string.h"
-#include <stdexcept>
+#include "libcommon/error.h"
+#include <experimental/filesystem>
 
 namespace common::trace
 {
 
 FileTraceSink::FileTraceSink(const std::wstring &file)
 {
-    common::fs::Mkdir(common::fs::GetPath(file));
+	const auto path = std::experimental::filesystem::path(file).parent_path();
+
+    common::fs::Mkdir(path);
 
     m_file = CreateFileW(file.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
     if (INVALID_HANDLE_VALUE == m_file)
     {
-        auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
+		const auto error = GetLastError();
+        const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
 
-        throw std::runtime_error(msg.c_str());
+		common::error::Throw(msg.c_str(), error);
     }
 }
 
@@ -35,7 +39,7 @@ void FileTraceSink::trace(const wchar_t *sender, const wchar_t *message)
 
     if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
     {
-        throw std::runtime_error("Failed to write trace event to disk");
+		THROW_GLE("Failed to write trace event to disk");
     }
 }
 
