@@ -12,35 +12,35 @@ FileTraceSink::FileTraceSink(const std::wstring &file)
 {
 	const auto path = std::experimental::filesystem::path(file).parent_path();
 
-    common::fs::Mkdir(path);
+	common::fs::Mkdir(path);
 
-    m_file = CreateFileW(file.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	m_file = CreateFileW(file.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (INVALID_HANDLE_VALUE == m_file)
-    {
+	if (INVALID_HANDLE_VALUE == m_file)
+	{
 		const auto error = GetLastError();
-        const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
+		const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
 
 		common::error::Throw(msg.c_str(), error);
-    }
+	}
 }
 
 FileTraceSink::~FileTraceSink()
 {
-    CloseHandle(m_file);
+	CloseHandle(m_file);
 }
 
 void FileTraceSink::trace(const wchar_t *sender, const wchar_t *message)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
+	std::lock_guard<std::mutex> lock(m_mutex);
 
-    auto msg = std::wstring(sender).append(L": ").append(message).append(L"\xd\xa");
-    auto encoded = common::string::ToAnsi(msg);
+	auto msg = std::wstring(sender).append(L": ").append(message).append(L"\xd\xa");
+	auto encoded = common::string::ToAnsi(msg);
 
-    if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
-    {
+	if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
+	{
 		THROW_GLE("Failed to write trace event to disk");
-    }
+	}
 }
 
 }

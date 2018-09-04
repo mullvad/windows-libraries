@@ -12,15 +12,15 @@ class FileTraceSink : public ITraceSink
 {
 public:
 
-    FileTraceSink(const std::wstring &file);
-    ~FileTraceSink();
+	FileTraceSink(const std::wstring &file);
+	~FileTraceSink();
 
-    void trace(const wchar_t *sender, const wchar_t *message) override;
+	void trace(const wchar_t *sender, const wchar_t *message) override;
 
 private:
 
-    HANDLE m_file;
-    std::mutex m_mutex;
+	HANDLE m_file;
+	std::mutex m_mutex;
 };
 
 }

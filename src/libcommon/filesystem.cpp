@@ -9,56 +9,56 @@ namespace common::fs
 
 void Mkdir(const std::wstring &path)
 {
-    if (path.empty())
-    {
-        return;
-    }
+	if (path.empty())
+	{
+		return;
+	}
 
-    auto dirs = common::string::Tokenize(path, L"/\\");
+	auto dirs = common::string::Tokenize(path, L"/\\");
 
-    //
-    // Implicit path so there is no work to be performed.
-    //
-    if (0 == dirs.size())
-    {
-        return;
-    }
+	//
+	// Implicit path so there is no work to be performed.
+	//
+	if (0 == dirs.size())
+	{
+		return;
+	}
 
-    //
-    // Only the volume is specified so ignore this request.
-    // TODO: It would be more correct to verify whether the volume exists.
-    //
-    if (1 == dirs.size())
-    {
-        return;
-    }
+	//
+	// Only the volume is specified so ignore this request.
+	// TODO: It would be more correct to verify whether the volume exists.
+	//
+	if (1 == dirs.size())
+	{
+		return;
+	}
 
-    std::wstring target = L"\\\\?\\";
+	std::wstring target = L"\\\\?\\";
 
-    auto it = dirs.begin();
+	auto it = dirs.begin();
 
-    target.append(*it++).push_back(L'\\');
+	target.append(*it++).push_back(L'\\');
 
-    DWORD lastError = ERROR_SUCCESS;
+	DWORD lastError = ERROR_SUCCESS;
 
-    do
-    {
-        target.append(*it++).push_back(L'\\');
+	do
+	{
+		target.append(*it++).push_back(L'\\');
 
-        //
-        // The first few levels can fail with ERROR_ACCESS_DENIED or
-        // ERROR_ALREADY_EXISTS but we keep going and check the status on the final node.
-        //
-        lastError = (CreateDirectoryW(target.c_str(), nullptr) ? ERROR_SUCCESS : GetLastError());
-    }
-    while (it != dirs.end());
+		//
+		// The first few levels can fail with ERROR_ACCESS_DENIED or
+		// ERROR_ALREADY_EXISTS but we keep going and check the status on the final node.
+		//
+		lastError = (CreateDirectoryW(target.c_str(), nullptr) ? ERROR_SUCCESS : GetLastError());
+	}
+	while (it != dirs.end());
 
-    if (ERROR_SUCCESS != lastError && ERROR_ALREADY_EXISTS != lastError)
-    {
-        auto msg = std::string("Failed to create directory: ").append(common::string::ToAnsi(target));
+	if (ERROR_SUCCESS != lastError && ERROR_ALREADY_EXISTS != lastError)
+	{
+		auto msg = std::string("Failed to create directory: ").append(common::string::ToAnsi(target));
 
-        throw std::runtime_error(msg.c_str());
-    }
+		throw std::runtime_error(msg.c_str());
+	}
 }
 
 std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE userToken)
