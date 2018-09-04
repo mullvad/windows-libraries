@@ -2,41 +2,45 @@
 #include "filetracesink.h"
 #include "libcommon/filesystem.h"
 #include "libcommon/string.h"
-#include <stdexcept>
+#include "libcommon/error.h"
+#include <experimental/filesystem>
 
 namespace common::trace
 {
 
 FileTraceSink::FileTraceSink(const std::wstring &file)
 {
-    common::fs::Mkdir(common::fs::GetPath(file));
+	const auto path = std::experimental::filesystem::path(file).parent_path();
 
-    m_file = CreateFileW(file.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	common::fs::Mkdir(path);
 
-    if (INVALID_HANDLE_VALUE == m_file)
-    {
-        auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
+	m_file = CreateFileW(file.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-        throw std::runtime_error(msg.c_str());
-    }
+	if (INVALID_HANDLE_VALUE == m_file)
+	{
+		const auto error = GetLastError();
+		const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
+
+		common::error::Throw(msg.c_str(), error);
+	}
 }
 
 FileTraceSink::~FileTraceSink()
 {
-    CloseHandle(m_file);
+	CloseHandle(m_file);
 }
 
 void FileTraceSink::trace(const wchar_t *sender, const wchar_t *message)
 {
-    std::lock_guard<std::mutex> lock(m_mutex);
+	std::lock_guard<std::mutex> lock(m_mutex);
 
-    auto msg = std::wstring(sender).append(L": ").append(message).append(L"\xd\xa");
-    auto encoded = common::string::ToAnsi(msg);
+	auto msg = std::wstring(sender).append(L": ").append(message).append(L"\xd\xa");
+	auto encoded = common::string::ToAnsi(msg);
 
-    if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
-    {
-        throw std::runtime_error("Failed to write trace event to disk");
-    }
+	if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
+	{
+		THROW_GLE("Failed to write trace event to disk");
+	}
 }
 
 }

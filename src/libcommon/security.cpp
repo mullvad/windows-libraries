@@ -94,7 +94,7 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 	std::vector<uint8_t> adminSidStorage(SECURITY_MAX_SID_SIZE);
 
 	SID *adminSid = reinterpret_cast<SID *>(&adminSidStorage[0]);
-	DWORD adminSidSize = adminSidStorage.size();
+	DWORD adminSidSize = static_cast<DWORD>(adminSidStorage.size());
 
 	const auto createSidStatus = CreateWellKnownSid(WinBuiltinAdministratorsSid, nullptr, adminSid, &adminSidSize);
 

@@ -14,9 +14,10 @@ DWORD GetProcessIdFromName(const std::wstring &processName, std::function<bool(c
 	// Allocate heap storage for 512 PIDs.
 	std::vector<DWORD> pids(512);
 
+	const DWORD bytesAvailable = static_cast<DWORD>(pids.size()) * sizeof(DWORD);
 	DWORD bytesWritten;
 
-	const auto enumStatus = K32EnumProcesses(&pids[0], pids.size() * sizeof(DWORD), &bytesWritten);
+	const auto enumStatus = K32EnumProcesses(&pids[0], bytesAvailable, &bytesWritten);
 
 	THROW_GLE_IF(FALSE, enumStatus, "Acquire list of PIDs in the system");
 
