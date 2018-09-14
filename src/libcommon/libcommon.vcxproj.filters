@@ -46,6 +46,15 @@
     <ClCompile Include="fileenumerator.cpp" />
     <ClCompile Include="security.cpp" />
     <ClCompile Include="process.cpp" />
+    <ClCompile Include="registry\registry.cpp">
+      <Filter>registry</Filter>
+    </ClCompile>
+    <ClCompile Include="registry\registrykey.cpp">
+      <Filter>registry</Filter>
+    </ClCompile>
+    <ClCompile Include="registry\registrymonitor.cpp">
+      <Filter>registry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -113,6 +122,15 @@
     <ClInclude Include="fileenumerator.h" />
     <ClInclude Include="security.h" />
     <ClInclude Include="process.h" />
+    <ClInclude Include="registry\registry.h">
+      <Filter>registry</Filter>
+    </ClInclude>
+    <ClInclude Include="registry\registrykey.h">
+      <Filter>registry</Filter>
+    </ClInclude>
+    <ClInclude Include="registry\registrymonitor.h">
+      <Filter>registry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">
@@ -123,6 +141,9 @@
     </Filter>
     <Filter Include="trace">
       <UniqueIdentifier>{0c82bd88-7f1d-4a6c-b5e7-440e9b5dc96a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="registry">
+      <UniqueIdentifier>{a916aef5-7d05-4081-ac65-77d6d56365bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
