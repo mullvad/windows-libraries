@@ -19,6 +19,9 @@
     <ClCompile Include="serialization.cpp">
       <Filter>tests</Filter>
     </ClCompile>
+    <ClCompile Include="registry.cpp">
+      <Filter>tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tests">

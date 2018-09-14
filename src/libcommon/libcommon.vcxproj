@@ -28,6 +28,9 @@
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="process.cpp" />
+    <ClCompile Include="registry\registry.cpp" />
+    <ClCompile Include="registry\registrykey.cpp" />
+    <ClCompile Include="registry\registrymonitor.cpp" />
     <ClCompile Include="security.cpp" />
     <ClCompile Include="serialization\deserializer.cpp" />
     <ClCompile Include="serialization\serializer.cpp" />
@@ -62,6 +65,9 @@
     <ClInclude Include="memory.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="process.h" />
+    <ClInclude Include="registry\registry.h" />
+    <ClInclude Include="registry\registrykey.h" />
+    <ClInclude Include="registry\registrymonitor.h" />
     <ClInclude Include="security.h" />
     <ClInclude Include="serialization\deserializer.h" />
     <ClInclude Include="serialization\serializer.h" />
