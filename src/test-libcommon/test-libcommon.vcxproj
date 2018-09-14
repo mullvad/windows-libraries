@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClCompile Include="math.cpp" />
     <ClCompile Include="network.cpp" />
+    <ClCompile Include="registry.cpp" />
     <ClCompile Include="serialization.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
