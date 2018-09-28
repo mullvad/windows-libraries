@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <guiddef.h>
 
 namespace common
@@ -18,6 +19,8 @@ public:
 	static GUID GenerateQuick();
 
 	static bool Empty(const GUID &candidate);
+
+	static GUID FromString(const std::wstring &guid);
 };
 
 }

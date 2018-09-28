@@ -37,4 +37,43 @@ bool Guid::Empty(const GUID &candidate)
 	return 0 == (*data | *(data + 1));
 }
 
+//static
+GUID Guid::FromString(const std::wstring &guid)
+{
+	//
+	// There are two standard ways of formatting a GUID
+	// One includes embracing curly braces, the other does not
+	//
+
+	std::wstring formattedGuid;
+
+	switch (guid.size())
+	{
+		case 38:
+		{
+			formattedGuid = guid.substr(1, 36);
+			break;
+		}
+		case 36:
+		{
+			formattedGuid = guid;
+			break;
+		}
+		default:
+		{
+			throw std::runtime_error("Invalid GUID format");
+		}
+	}
+
+	GUID convertedGuid;
+
+	auto lolwindows = reinterpret_cast<unsigned short *>(const_cast<wchar_t *>(formattedGuid.c_str()));
+
+	const auto status = UuidFromStringW(lolwindows, &convertedGuid);
+
+	THROW_UNLESS(RPC_S_OK, status, "Convert formatted GUID to raw representation");
+
+	return convertedGuid;
+}
+
 }
