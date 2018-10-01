@@ -42,6 +42,8 @@ private:
 
 	RegistryMonitorArguments m_args;
 	HANDLE m_event;
+
+	bool m_hasRequestedNotification = false;
 };
 
 }

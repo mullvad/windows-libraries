@@ -25,6 +25,14 @@ RegistryMonitor::~RegistryMonitor()
 
 HANDLE RegistryMonitor::queueSingleEvent()
 {
+	if (m_hasRequestedNotification)
+	{
+		if (WAIT_TIMEOUT == WaitForSingleObject(m_event, 0))
+		{
+			return m_event;
+		}
+	}
+
 	DWORD filter = 0;
 
 	for (const auto &flag : m_args.events)
@@ -51,6 +59,8 @@ HANDLE RegistryMonitor::queueSingleEvent()
 	const auto status = RegNotifyChangeKeyValue(m_args.key, m_args.monitorTree, filter, m_event, TRUE);
 
 	THROW_UNLESS(ERROR_SUCCESS, status, "Activate registry monitoring");
+
+	m_hasRequestedNotification = true;
 
 	return m_event;
 }
