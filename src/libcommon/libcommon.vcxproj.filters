@@ -55,6 +55,9 @@
     <ClCompile Include="registry\registrymonitor.cpp">
       <Filter>registry</Filter>
     </ClCompile>
+    <ClCompile Include="registry\registrypath.cpp">
+      <Filter>registry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -129,6 +132,9 @@
       <Filter>registry</Filter>
     </ClInclude>
     <ClInclude Include="registry\registrymonitor.h">
+      <Filter>registry</Filter>
+    </ClInclude>
+    <ClInclude Include="registry\registrypath.h">
       <Filter>registry</Filter>
     </ClInclude>
   </ItemGroup>

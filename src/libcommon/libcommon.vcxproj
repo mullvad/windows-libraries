@@ -31,6 +31,7 @@
     <ClCompile Include="registry\registry.cpp" />
     <ClCompile Include="registry\registrykey.cpp" />
     <ClCompile Include="registry\registrymonitor.cpp" />
+    <ClCompile Include="registry\registrypath.cpp" />
     <ClCompile Include="security.cpp" />
     <ClCompile Include="serialization\deserializer.cpp" />
     <ClCompile Include="serialization\serializer.cpp" />
@@ -68,6 +69,7 @@
     <ClInclude Include="registry\registry.h" />
     <ClInclude Include="registry\registrykey.h" />
     <ClInclude Include="registry\registrymonitor.h" />
+    <ClInclude Include="registry\registrypath.h" />
     <ClInclude Include="security.h" />
     <ClInclude Include="serialization\deserializer.h" />
     <ClInclude Include="serialization\serializer.h" />

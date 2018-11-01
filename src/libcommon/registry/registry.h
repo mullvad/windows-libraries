@@ -63,6 +63,15 @@ public:
 		bool monitorTree = false,
 		RegistryView view = RegistryView::Default
 	);
+
+	static void MoveKey
+	(
+		HKEY sourceKey,
+		const std::wstring &sourceSubkey,
+		HKEY destinationKey,
+		const std::wstring &destinationSubkey,
+		RegistryView view = RegistryView::Default
+	);
 };
 
 }

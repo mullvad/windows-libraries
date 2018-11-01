@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "registry.h"
+#include "registrypath.h"
 #include <libcommon/error.h>
 #include <stdexcept>
 
@@ -27,6 +28,29 @@ REGSAM CreateAccessFlags(bool writeAccess, common::registry::RegistryView view)
 	};
 
 	return accessFlags;
+}
+
+void DefaultMoveKey(const common::registry::RegistryPath &source, const common::registry::RegistryPath &destination)
+{
+	HKEY destHandle;
+
+	auto status = RegCreateKeyExW(destination.key(), destination.subkey().c_str(), 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &destHandle, nullptr);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Create destination key");
+
+	status = RegCopyTreeW(source.key(), source.subkey().c_str(), destHandle);
+
+	RegCloseKey(destHandle);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Copy registry key");
+
+	status = RegDeleteTreeW(source.key(), source.subkey().c_str());
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source tree");
+
+	status = RegDeleteKeyW(source.key(), source.subkey().c_str());
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source key");
 }
 
 } // anonymous namespace
@@ -143,6 +167,63 @@ std::unique_ptr<RegistryMonitor> Registry::MonitorKey
 	args.monitorTree = monitorTree;
 
 	return std::make_unique<RegistryMonitor>(std::move(args));
+}
+
+// static
+void Registry::MoveKey
+(
+	HKEY sourceKey,
+	const std::wstring &sourceSubkey,
+	HKEY destinationKey,
+	const std::wstring &destinationSubkey,
+	RegistryView view
+)
+{
+	RegistryPath source(sourceKey, sourceSubkey);
+	RegistryPath destination(destinationKey, destinationSubkey);
+
+	if (RegistryView::Default == view)
+	{
+		DefaultMoveKey(source, destination);
+		return;
+	}
+
+	const REGSAM viewFlag = (RegistryView::Force32 == view ? KEY_WOW64_32KEY : KEY_WOW64_64KEY);
+
+	auto releaseHkey = [](HKEY *key)
+	{
+		if (nullptr != *key)
+		{
+			RegCloseKey(*key);
+		}
+
+		delete key;
+	};
+
+	std::unique_ptr<HKEY, decltype(releaseHkey)>
+		sourceHandle(new HKEY(nullptr), releaseHkey),
+		destinationHandle(new HKEY(nullptr), releaseHkey);
+
+ 	auto status = RegOpenKeyExW(source.key(), source.subkey().c_str(), 0, KEY_ALL_ACCESS | viewFlag, sourceHandle.get());
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Open source key");
+
+	status = RegCreateKeyExW(destination.key(), destination.subkey().c_str(), 0, nullptr, 0, \
+		KEY_ALL_ACCESS | viewFlag, nullptr, destinationHandle.get(), nullptr);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Create destination key");
+
+	status = RegCopyTreeW(*sourceHandle, nullptr, *destinationHandle);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Copy registry key");
+
+	status = RegDeleteTreeW(*sourceHandle, nullptr);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source tree");
+
+	status = RegDeleteKeyExW(source.key(), source.subkey().c_str(), viewFlag, 0);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source key");
 }
 
 }
