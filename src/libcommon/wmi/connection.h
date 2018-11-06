@@ -26,6 +26,8 @@ public:
 
 	explicit Connection(Namespace ns);
 
+	~Connection();
+
 	ResultSet query(const wchar_t *query) override;
 
 	CComPtr<IWbemServices> services() override
@@ -35,10 +37,14 @@ public:
 
 private:
 
+	bool m_unloadApartment;
+
 	CComPtr<IWbemLocator> m_locator;
 	CComPtr<IWbemServices> m_services;
 
 	_bstr_t m_queryLanguage;
+
+	void releaseComResources();
 };
 
 }

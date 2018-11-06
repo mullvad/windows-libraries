@@ -137,6 +137,7 @@
     <ClInclude Include="registry\registrypath.h">
       <Filter>registry</Filter>
     </ClInclude>
+    <ClInclude Include="valuemapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">

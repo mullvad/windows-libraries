@@ -30,30 +30,48 @@ const wchar_t *LiteralNamespace(common::wmi::Connection::Namespace ns)
 namespace common::wmi
 {
 
-Connection::Connection(Namespace ns) : m_queryLanguage(L"WQL")
+Connection::Connection(Namespace ns)
+	: m_unloadApartment(false)
+	, m_queryLanguage(L"WQL")
 {
-	auto status = CoCreateInstance(CLSID_WbemLocator, nullptr, CLSCTX_INPROC_SERVER,
-		IID_IWbemLocator, (LPVOID *)&m_locator);
-
-	if (CO_E_NOTINITIALIZED == status)
+	try
 	{
-		VALIDATE_COM(CoInitializeEx(nullptr, COINIT_MULTITHREADED), "Initialize COM");
-
-		status = CoCreateInstance(CLSID_WbemLocator, nullptr, CLSCTX_INPROC_SERVER,
+		auto status = CoCreateInstance(CLSID_WbemLocator, nullptr, CLSCTX_INPROC_SERVER,
 			IID_IWbemLocator, (LPVOID *)&m_locator);
+
+		if (CO_E_NOTINITIALIZED == status)
+		{
+			VALIDATE_COM(CoInitializeEx(nullptr, COINIT_MULTITHREADED), "Initialize COM");
+
+			m_unloadApartment = true;
+
+			status = CoCreateInstance(CLSID_WbemLocator, nullptr, CLSCTX_INPROC_SERVER,
+				IID_IWbemLocator, (LPVOID *)&m_locator);
+		}
+
+		VALIDATE_COM(status, "Create COM locator instance");
+
+		status = m_locator->ConnectServer(_bstr_t(LiteralNamespace(ns)), nullptr, nullptr,
+			nullptr, 0, nullptr, nullptr, &m_services);
+
+		VALIDATE_COM(status, "Create COM services instance");
+
+		status = CoSetProxyBlanket(m_services, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr,
+			RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
+
+		VALIDATE_COM(status, "Configure COM services auth");
 	}
+	catch (...)
+	{
+		releaseComResources();
 
-	VALIDATE_COM(status, "Create COM locator instance");
+		throw;
+	}
+}
 
-	status = m_locator->ConnectServer(_bstr_t(LiteralNamespace(ns)), nullptr, nullptr,
-		nullptr, 0, nullptr, nullptr, &m_services);
-
-	VALIDATE_COM(status, "Create COM services instance");
-
-	status = CoSetProxyBlanket(m_services, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr,
-		RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
-
-	VALIDATE_COM(status, "Configure COM services auth");
+Connection::~Connection()
+{
+	releaseComResources();
 }
 
 ResultSet Connection::query(const wchar_t *query)
@@ -66,6 +84,17 @@ ResultSet Connection::query(const wchar_t *query)
 	VALIDATE_COM(status, "Execute WMI query");
 
 	return ResultSet(result);
+}
+
+void Connection::releaseComResources()
+{
+	m_services.Release();
+	m_locator.Release();
+
+	if (m_unloadApartment)
+	{
+		CoUninitialize();
+	}
 }
 
 }

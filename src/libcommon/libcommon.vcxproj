@@ -82,6 +82,7 @@
     <ClInclude Include="trace\itracesink.h" />
     <ClInclude Include="trace\trace.h" />
     <ClInclude Include="trace\xtrace.h" />
+    <ClInclude Include="valuemapper.h" />
     <ClInclude Include="wmi\connection.h" />
     <ClInclude Include="wmi\eventdispatcher.h" />
     <ClInclude Include="wmi\iconnection.h" />
