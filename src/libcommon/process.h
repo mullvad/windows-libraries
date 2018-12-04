@@ -2,6 +2,7 @@
 
 #include <string>
 #include <functional>
+#include <unordered_set>
 #include <wchar.h>
 #include <windows.h>
 
@@ -22,5 +23,13 @@ struct DefaultProcessNameComparator
 //
 DWORD GetProcessIdFromName(const std::wstring &processName,
 	std::function<bool(const std::wstring &lhs, const std::wstring &rhs)> comp = DefaultProcessNameComparator());
+
+//
+// N.B this can return an empty set.
+//
+std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processName,
+	std::function<bool(const std::wstring &lhs, const std::wstring &rhs)> comp = DefaultProcessNameComparator());
+
+void Run(const std::wstring &path);
 
 }
