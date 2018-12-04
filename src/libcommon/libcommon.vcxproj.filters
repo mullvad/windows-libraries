@@ -58,6 +58,7 @@
     <ClCompile Include="registry\registrypath.cpp">
       <Filter>registry</Filter>
     </ClCompile>
+    <ClCompile Include="resourcedata.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -138,6 +139,7 @@
       <Filter>registry</Filter>
     </ClInclude>
     <ClInclude Include="valuemapper.h" />
+    <ClInclude Include="resourcedata.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">
