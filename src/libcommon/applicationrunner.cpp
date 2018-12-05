@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <process.h>
 
+using UniqueHandle = common::memory::UniqueHandle;
+
 namespace common
 {
 

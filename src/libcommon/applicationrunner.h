@@ -40,15 +40,13 @@ private:
 
 	static unsigned __stdcall ReadThread(void *p);
 
-	typedef std::unique_ptr<HANDLE, memory::HandleDeleter> UniqueHandle;
-
 	DWORD m_processId;
-	UniqueHandle m_process;
+	memory::UniqueHandle m_process;
 
-	UniqueHandle m_stdInRead;
-	UniqueHandle m_stdInWrite;
-	UniqueHandle m_stdOutRead;
-	UniqueHandle m_stdOutWrite;
+	memory::UniqueHandle m_stdInRead;
+	memory::UniqueHandle m_stdInWrite;
+	memory::UniqueHandle m_stdOutRead;
+	memory::UniqueHandle m_stdOutWrite;
 };
 
 }
