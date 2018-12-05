@@ -32,4 +32,6 @@ std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processNa
 
 void Run(const std::wstring &path);
 
+void RunInContext(HANDLE securityContext, const std::wstring &path);
+
 }
