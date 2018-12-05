@@ -4,6 +4,8 @@
 #include "memory.h"
 #include <vector>
 
+using UniqueHandle = common::memory::UniqueHandle;
+
 namespace common::security
 {
 
@@ -156,6 +158,27 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 	);
 
 	THROW_UNLESS(ERROR_SUCCESS, setSecurityStatus, "Apply updated DACL")
+}
+
+UniqueHandle DuplicateSecurityContext(DWORD processId)
+{
+	auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId);
+
+	THROW_GLE_IF(nullptr, processHandle, "Open process");
+
+	HANDLE processToken;
+
+	auto status = OpenProcessToken(processHandle, TOKEN_READ | TOKEN_DUPLICATE, &processToken);
+
+	THROW_GLE_IF(0, status, "Open process token");
+
+	HANDLE duplicatedToken;
+
+	status = DuplicateTokenEx(processToken, MAXIMUM_ALLOWED, nullptr, SecurityImpersonation, TokenPrimary, &duplicatedToken);
+
+	THROW_GLE_IF(FALSE, status, "Duplicate token");
+
+	return UniqueHandle(new HANDLE(duplicatedToken));
 }
 
 }
