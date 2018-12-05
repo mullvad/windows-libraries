@@ -124,10 +124,37 @@ void Run(const std::wstring &path)
 	const auto status = CreateProcessW(nullptr, const_cast<wchar_t *>(quotedPath.c_str()),
 		nullptr, nullptr, FALSE, 0, nullptr, workingDir.c_str(), &si, &pi);
 
+	THROW_GLE_IF(FALSE, status, "Launch subprocess");
+
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
+}
+
+void RunInContext(HANDLE securityContext, const std::wstring &path)
+{
+	using namespace std::experimental;
+
+	const auto fspath = filesystem::path(path);
+
+	if (false == fspath.is_absolute()
+		|| false == fspath.has_filename())
+	{
+		throw std::runtime_error("Invalid path spec for subprocess");
+	}
+
+	const auto workingDir = fspath.parent_path();
+	const auto quotedPath = std::wstring(L"\"").append(path).append(L"\"");
+
+	STARTUPINFOW si = { sizeof(STARTUPINFOW) };
+	PROCESS_INFORMATION pi = { 0 };
+
+	const auto status = CreateProcessWithTokenW(securityContext, 0, nullptr,
+		const_cast<wchar_t *>(quotedPath.c_str()), 0, nullptr, workingDir.c_str(), &si, &pi);
 
 	THROW_GLE_IF(FALSE, status, "Launch subprocess");
+
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
 }
 
 }
