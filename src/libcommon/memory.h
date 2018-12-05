@@ -20,6 +20,8 @@ struct HandleDeleter
 	}
 };
 
+using UniqueHandle = std::unique_ptr<HANDLE, HandleDeleter>;
+
 class ScopeDestructor
 {
 public:
