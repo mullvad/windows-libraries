@@ -37,7 +37,9 @@ void FileTraceSink::trace(const wchar_t *sender, const wchar_t *message)
 	auto msg = std::wstring(sender).append(L": ").append(message).append(L"\xd\xa");
 	auto encoded = common::string::ToAnsi(msg);
 
-	if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), nullptr, nullptr))
+	DWORD bytesWritten;
+
+	if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), &bytesWritten, nullptr))
 	{
 		THROW_GLE("Failed to write trace event to disk");
 	}
