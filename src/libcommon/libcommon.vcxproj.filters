@@ -140,6 +140,7 @@
     </ClInclude>
     <ClInclude Include="valuemapper.h" />
     <ClInclude Include="resourcedata.h" />
+    <ClInclude Include="synchronization.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wmi">
