@@ -8,30 +8,12 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="guid.cpp" />
-    <ClCompile Include="wmi\connection.cpp">
-      <Filter>wmi</Filter>
-    </ClCompile>
-    <ClCompile Include="wmi\eventdispatcher.cpp">
-      <Filter>wmi</Filter>
-    </ClCompile>
-    <ClCompile Include="wmi\methodcall.cpp">
-      <Filter>wmi</Filter>
-    </ClCompile>
-    <ClCompile Include="wmi\notification.cpp">
-      <Filter>wmi</Filter>
-    </ClCompile>
-    <ClCompile Include="wmi\resultset.cpp">
-      <Filter>wmi</Filter>
-    </ClCompile>
     <ClCompile Include="com.cpp" />
     <ClCompile Include="serialization\deserializer.cpp">
       <Filter>serialization</Filter>
     </ClCompile>
     <ClCompile Include="serialization\serializer.cpp">
       <Filter>serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="wmi\wmi.cpp">
-      <Filter>wmi</Filter>
     </ClCompile>
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="trace\consoletracesink.cpp">
@@ -72,27 +54,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="guid.h" />
-    <ClInclude Include="wmi\connection.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\eventdispatcher.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\iconnection.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\ieventsink.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\methodcall.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\notification.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\resultset.h">
-      <Filter>wmi</Filter>
-    </ClInclude>
     <ClInclude Include="com.h" />
     <ClInclude Include="serialization\deserializer.h">
       <Filter>serialization</Filter>
@@ -102,9 +63,6 @@
     </ClInclude>
     <ClInclude Include="serialization\typetag.h">
       <Filter>serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="wmi\wmi.h">
-      <Filter>wmi</Filter>
     </ClInclude>
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="macroargument.h" />
@@ -143,9 +101,6 @@
     <ClInclude Include="synchronization.h" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="wmi">
-      <UniqueIdentifier>{9a3a5217-31b9-472e-afac-6f5d57b93565}</UniqueIdentifier>
-    </Filter>
     <Filter Include="serialization">
       <UniqueIdentifier>{60530505-2146-473a-92fc-9c1883cfaa88}</UniqueIdentifier>
     </Filter>

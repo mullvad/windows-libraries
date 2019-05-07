@@ -46,12 +46,6 @@
     <ClCompile Include="trace\consoletracesink.cpp" />
     <ClCompile Include="trace\filetracesink.cpp" />
     <ClCompile Include="trace\trace.cpp" />
-    <ClCompile Include="wmi\connection.cpp" />
-    <ClCompile Include="wmi\eventdispatcher.cpp" />
-    <ClCompile Include="wmi\methodcall.cpp" />
-    <ClCompile Include="wmi\notification.cpp" />
-    <ClCompile Include="wmi\resultset.cpp" />
-    <ClCompile Include="wmi\wmi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -86,14 +80,6 @@
     <ClInclude Include="trace\trace.h" />
     <ClInclude Include="trace\xtrace.h" />
     <ClInclude Include="valuemapper.h" />
-    <ClInclude Include="wmi\connection.h" />
-    <ClInclude Include="wmi\eventdispatcher.h" />
-    <ClInclude Include="wmi\iconnection.h" />
-    <ClInclude Include="wmi\ieventsink.h" />
-    <ClInclude Include="wmi\methodcall.h" />
-    <ClInclude Include="wmi\notification.h" />
-    <ClInclude Include="wmi\resultset.h" />
-    <ClInclude Include="wmi\wmi.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
