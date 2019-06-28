@@ -97,9 +97,9 @@ std::wstring FormatIpv4(uint32_t ip)
 
 std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix)
 {
-	std::wstringstream ss(FormatIpv4(ip));
+	std::wstringstream ss;
 
-	ss << L"/" << routingPrefix;
+	ss << FormatIpv4(ip) << L"/" << routingPrefix;
 
 	return ss.str();
 }
@@ -132,9 +132,9 @@ std::wstring FormatIpv6(const uint8_t ip[16])
 
 std::wstring FormatIpv6(const uint8_t ip[16], uint8_t routingPrefix)
 {
-	std::wstringstream ss(FormatIpv6(ip));
+	std::wstringstream ss;
 
-	ss << L"/" << routingPrefix;
+	ss << FormatIpv6(ip) << L"/" << routingPrefix;
 
 	return ss.str();
 }

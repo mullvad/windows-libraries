@@ -37,9 +37,18 @@ std::wstring FormatFlags(std::vector<std::pair<T, std::wstring> > &definitions, 
 	return Join(present);
 }
 
+// Format network byte order address.
 std::wstring FormatIpv4(uint32_t ip);
+
+// TODO: Fix later if intending to produce user facing strings.
+// This is a naive implementation that always formats four bytes.
 std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix);
+
+// TODO: Format into compact representation.
 std::wstring FormatIpv6(const uint8_t ip[16]);
+
+// TODO: Fix later if intending to produce user facing strings.
+// This is a naive implementation that always formats eight words.
 std::wstring FormatIpv6(const uint8_t ip[16], uint8_t routingPrefix);
 
 std::wstring FormatTime(const FILETIME &filetime);

@@ -17,3 +17,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+#pragma comment(lib, "rpcrt4.lib")
+#pragma comment(lib, "ws2_32.lib")
