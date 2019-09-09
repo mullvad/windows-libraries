@@ -26,6 +26,7 @@
     <ClCompile Include="fileenumerator.cpp" />
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="guid.cpp" />
+    <ClCompile Include="logging\logsink.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="process.cpp" />
     <ClCompile Include="registry\registry.cpp" />
@@ -56,6 +57,8 @@
     <ClInclude Include="fileenumerator.h" />
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="guid.h" />
+    <ClInclude Include="logging\ilogsink.h" />
+    <ClInclude Include="logging\logsink.h" />
     <ClInclude Include="macroargument.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="memory.h" />

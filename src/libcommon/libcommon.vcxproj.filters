@@ -41,6 +41,9 @@
       <Filter>registry</Filter>
     </ClCompile>
     <ClCompile Include="resourcedata.cpp" />
+    <ClCompile Include="logging\logsink.cpp">
+      <Filter>logging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -99,6 +102,12 @@
     <ClInclude Include="valuemapper.h" />
     <ClInclude Include="resourcedata.h" />
     <ClInclude Include="synchronization.h" />
+    <ClInclude Include="logging\ilogsink.h">
+      <Filter>logging</Filter>
+    </ClInclude>
+    <ClInclude Include="logging\logsink.h">
+      <Filter>logging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="serialization">
@@ -109,6 +118,9 @@
     </Filter>
     <Filter Include="registry">
       <UniqueIdentifier>{a916aef5-7d05-4081-ac65-77d6d56365bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logging">
+      <UniqueIdentifier>{dcae1c72-8215-4a52-a099-11aa3f770b4b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
