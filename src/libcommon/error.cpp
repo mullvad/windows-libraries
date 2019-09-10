@@ -66,4 +66,21 @@ void Throw(const char *operation, DWORD errorCode)
 	std::throw_with_nested(std::runtime_error(ss.str()));
 }
 
+void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)
+{
+	logSink->error(err.what());
+
+	try
+	{
+		std::rethrow_if_nested(err);
+	}
+	catch (const std::exception &innerErr)
+	{
+		UnwindException(innerErr, logSink);
+	}
+	catch (...)
+	{
+	}
+}
+
 }
