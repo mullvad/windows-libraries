@@ -117,6 +117,31 @@ std::basic_string<T> TrimRight(const std::basic_string<T> &str)
 }
 
 template<typename T>
+std::basic_string<T> TrimLeft(const std::basic_string<T> &str)
+{
+	std::basic_string<T> trimmed(str);
+
+	auto index = trimmed.find_first_not_of(SelectTrimChars<T>());
+
+	if (std::basic_string<T>::npos == index)
+	{
+		trimmed.clear();
+	}
+	else
+	{
+		trimmed = trimmed.substr(index);
+	}
+
+	return trimmed;
+}
+
+template<typename T>
+std::basic_string<T> Trim(const std::basic_string<T> &str)
+{
+	return TrimLeft<>(TrimRight<>(str));
+}
+
+template<typename T>
 T LexicalCast(const std::wstring &s)
 {
 	std::wstringstream ss(s);
