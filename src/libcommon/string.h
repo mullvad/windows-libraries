@@ -12,7 +12,7 @@ namespace common::string {
 
 std::wstring FormatGuid(const GUID &guid);
 std::wstring FormatSid(const SID &sid);
-std::wstring Join(const std::vector<std::wstring> &parts);
+std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &delimiter=L", ");
 
 template<typename T>
 std::wstring FormatFlags(std::vector<std::pair<T, std::wstring> > &definitions, T flags)
@@ -66,7 +66,6 @@ bool BeginsWith(const std::basic_string<T> &hay, const std::basic_string<T> &nee
 }
 
 std::wstring Lower(const std::wstring &str);
-std::wstring Join(const std::vector<std::wstring>& tokens, const std::wstring &delimiter);
 std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &delimiters);
 std::string ToAnsi(const std::wstring &str);
 std::wstring ToWide(const std::string &str);
