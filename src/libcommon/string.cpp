@@ -47,7 +47,7 @@ std::wstring FormatSid(const SID &sid)
 	return formatted;
 }
 
-std::wstring Join(const std::vector<std::wstring> &parts)
+std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &delimiter)
 {
 	switch (parts.size())
 	{
@@ -61,18 +61,18 @@ std::wstring Join(const std::vector<std::wstring> &parts)
 
 			size_t reserveSize = 0;
 
-			std::for_each(parts.begin(), parts.end(), [&reserveSize](const std::wstring &part)
+			std::for_each(parts.begin(), parts.end(), [&reserveSize, &delimiter](const std::wstring &part)
 			{
-				reserveSize += (part.size() + 2);
+				reserveSize += (part.size() + delimiter.size());
 			});
 
 			joined.reserve(reserveSize);
 
-			std::for_each(parts.begin(), parts.end(), [&joined](const std::wstring &part)
+			std::for_each(parts.begin(), parts.end(), [&joined, &delimiter](const std::wstring &part)
 			{
 				if (!joined.empty())
 				{
-					joined.append(L", ");
+					joined.append(delimiter);
 				}
 
 				joined.append(part);

@@ -12,7 +12,7 @@ namespace common::string {
 
 std::wstring FormatGuid(const GUID &guid);
 std::wstring FormatSid(const SID &sid);
-std::wstring Join(const std::vector<std::wstring> &parts);
+std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &delimiter=L", ");
 
 template<typename T>
 std::wstring FormatFlags(std::vector<std::pair<T, std::wstring> > &definitions, T flags)

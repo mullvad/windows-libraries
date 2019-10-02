@@ -15,11 +15,11 @@ RegistryKey::~RegistryKey()
 	RegCloseKey(m_key);
 }
 
-void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &valueData)
+void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type)
 {
 	auto dataLength = static_cast<DWORD>((valueData.size() + 1) * sizeof(wchar_t));
 
-	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_SZ,
+	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, static_cast<DWORD>(type),
 		reinterpret_cast<const BYTE *>(valueData.c_str()), dataLength);
 
 	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
@@ -95,9 +95,9 @@ void RegistryKey::deleteValue(const std::wstring &valueName)
 	THROW_UNLESS(ERROR_SUCCESS, status, "Delete registry value");
 }
 
-std::wstring RegistryKey::readString(const std::wstring &valueName) const
+std::wstring RegistryKey::readString(const std::wstring &valueName, ValueStringType type) const
 {
-	auto buffer = readRaw(valueName, REG_SZ);
+	auto buffer = readRaw(valueName, static_cast<DWORD>(type));
 
 	if (buffer.size() <= 1)
 	{
