@@ -21,11 +21,11 @@ public:
 
 	enum class ValueStringType
 	{
-		SZ = REG_SZ,
-		EXPAND_SZ = REG_EXPAND_SZ,
+		RegularString = REG_SZ,
+		ExpandableString = REG_EXPAND_SZ,
 	};
 
-	void writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type = ValueStringType::SZ);
+	void writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type = ValueStringType::RegularString);
 	void writeValue(const std::wstring &valueName, uint32_t valueData);
 	void writeValue(const std::wstring &valueName, uint64_t valueData);
 	void writeValue(const std::wstring &valueName, const std::vector<uint8_t> &valueData);
@@ -33,7 +33,7 @@ public:
 
 	void deleteValue(const std::wstring &valueName);
 
-	std::wstring readString(const std::wstring &valueName, ValueStringType type = ValueStringType::SZ) const;
+	std::wstring readString(const std::wstring &valueName, ValueStringType type = ValueStringType::RegularString) const;
 	uint32_t readUint32(const std::wstring &valueName) const;
 	uint64_t readUint64(const std::wstring &valueName) const;
 	std::vector<uint8_t> readBinaryBlob(const std::wstring &valueName) const;
