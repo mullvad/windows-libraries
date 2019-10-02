@@ -66,6 +66,7 @@ bool BeginsWith(const std::basic_string<T> &hay, const std::basic_string<T> &nee
 }
 
 std::wstring Lower(const std::wstring &str);
+std::wstring Join(const std::vector<std::wstring>& tokens, const std::wstring &delimiter);
 std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &delimiters);
 std::string ToAnsi(const std::wstring &str);
 std::wstring ToWide(const std::string &str);

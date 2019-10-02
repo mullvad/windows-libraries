@@ -184,6 +184,17 @@ std::wstring Lower(const std::wstring &str)
 	return buffer.get();
 }
 
+std::wstring Join(const std::vector<std::wstring> &tokens, const std::wstring &delimiter)
+{
+	std::wstringstream ss;
+	if (tokens.size() >= 1)
+		ss << tokens[0];
+	for (int i = 1; i < tokens.size(); i++) {
+		ss << delimiter << tokens[i];
+	}
+	return ss.str();
+}
+
 std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &delimiters)
 {
 	auto bufferSize = str.size() + 1;
