@@ -95,6 +95,25 @@ void RegistryKey::deleteValue(const std::wstring &valueName)
 	THROW_UNLESS(ERROR_SUCCESS, status, "Delete registry value");
 }
 
+RegistryKey::ValueStringType RegistryKey::stringTypeOf(const std::wstring & valueName) const
+{
+	DWORD actualDataType;
+
+	auto status = RegQueryValueExW(m_key, valueName.c_str(), nullptr, &actualDataType, nullptr, nullptr);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Query for registry value data type");
+
+	switch (actualDataType)
+	{
+		case static_cast<DWORD>(ValueStringType::RegularString):
+		case static_cast<DWORD>(ValueStringType::ExpandableString):
+		{
+			return static_cast<ValueStringType>(actualDataType);
+		}
+	}
+	throw std::runtime_error("Registry value is not a string");
+}
+
 std::wstring RegistryKey::readString(const std::wstring &valueName, ValueStringType type) const
 {
 	auto buffer = readRaw(valueName, static_cast<DWORD>(type));

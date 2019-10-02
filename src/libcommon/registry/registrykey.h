@@ -33,6 +33,8 @@ public:
 
 	void deleteValue(const std::wstring &valueName);
 
+	ValueStringType stringTypeOf(const std::wstring &valueName) const;
+
 	std::wstring readString(const std::wstring &valueName, ValueStringType type = ValueStringType::RegularString) const;
 	uint32_t readUint32(const std::wstring &valueName) const;
 	uint64_t readUint64(const std::wstring &valueName) const;
