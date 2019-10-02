@@ -15,6 +15,16 @@ RegistryKey::~RegistryKey()
 	RegCloseKey(m_key);
 }
 
+void RegistryKey::writeValueExpanded(const std::wstring &valueName, const std::wstring &valueData)
+{
+	auto dataLength = static_cast<DWORD>((valueData.size() + 1) * sizeof(wchar_t));
+
+	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_EXPAND_SZ,
+		reinterpret_cast<const BYTE *>(valueData.c_str()), dataLength);
+
+	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+}
+
 void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &valueData)
 {
 	auto dataLength = static_cast<DWORD>((valueData.size() + 1) * sizeof(wchar_t));
@@ -288,6 +298,9 @@ std::vector<uint8_t> RegistryKey::readRaw(const std::wstring &valueName, DWORD d
 	auto status = RegQueryValueExW(m_key, valueName.c_str(), nullptr, &actualDataType, nullptr, &dataSize);
 
 	THROW_UNLESS(ERROR_SUCCESS, status, "Query for registry value data type and data length");
+
+	if (actualDataType == REG_EXPAND_SZ)
+		actualDataType = REG_SZ;
 
 	if (actualDataType != dataType)
 	{

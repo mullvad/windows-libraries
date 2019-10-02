@@ -20,6 +20,7 @@ public:
 	RegistryKey &operator=(const RegistryKey &rhs) = delete;
 
 	void writeValue(const std::wstring &valueName, const std::wstring &valueData);
+	void writeValueExpanded(const std::wstring &valueName, const std::wstring &valueData);
 	void writeValue(const std::wstring &valueName, uint32_t valueData);
 	void writeValue(const std::wstring &valueName, uint64_t valueData);
 	void writeValue(const std::wstring &valueName, const std::vector<uint8_t> &valueData);
