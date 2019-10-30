@@ -28,10 +28,6 @@ public:
 	LogSink(LogSink &&) = default;
 	LogSink &operator=(LogSink &&) = default;
 
-	virtual ~LogSink() = 0
-	{
-	}
-
 	void setTarget(LogTarget target);
 
 	virtual void error(const char *msg) override;
