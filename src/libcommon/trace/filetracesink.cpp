@@ -3,14 +3,14 @@
 #include "libcommon/filesystem.h"
 #include "libcommon/string.h"
 #include "libcommon/error.h"
-#include <experimental/filesystem>
+#include <filesystem>
 
 namespace common::trace
 {
 
 FileTraceSink::FileTraceSink(const std::wstring &file)
 {
-	const auto path = std::experimental::filesystem::path(file).parent_path();
+	const auto path = std::filesystem::path(file).parent_path();
 
 	common::fs::Mkdir(path);
 

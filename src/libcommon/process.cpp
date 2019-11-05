@@ -2,7 +2,7 @@
 #include "process.h"
 #include "error.h"
 #include <stdexcept>
-#include <experimental/filesystem>
+#include <filesystem>
 
 #define PSAPI_VERSION 2
 #include <psapi.h>
@@ -105,9 +105,7 @@ std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processNa
 
 void Run(const std::wstring &path)
 {
-	using namespace std::experimental;
-
-	const auto fspath = filesystem::path(path);
+	const auto fspath = std::filesystem::path(path);
 
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
@@ -132,9 +130,7 @@ void Run(const std::wstring &path)
 
 void RunInContext(HANDLE securityContext, const std::wstring &path)
 {
-	using namespace std::experimental;
-
-	const auto fspath = filesystem::path(path);
+	const auto fspath = std::filesystem::path(path);
 
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
