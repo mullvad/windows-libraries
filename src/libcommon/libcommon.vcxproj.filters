@@ -44,6 +44,10 @@
     <ClCompile Include="logging\logsink.cpp">
       <Filter>logging</Filter>
     </ClCompile>
+    <ClCompile Include="network\adapters.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="burstguard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -108,6 +112,10 @@
     <ClInclude Include="logging\logsink.h">
       <Filter>logging</Filter>
     </ClInclude>
+    <ClInclude Include="network\adapters.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="burstguard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="serialization">
@@ -121,6 +129,9 @@
     </Filter>
     <Filter Include="logging">
       <UniqueIdentifier>{dcae1c72-8215-4a52-a099-11aa3f770b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{cdd9835f-e016-46fa-bdb4-847181ac118d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
