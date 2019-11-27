@@ -19,31 +19,36 @@ void LogSink::setTarget(LogTarget target)
 
 void LogSink::error(const char *msg)
 {
-	forward(Severity::Error, msg);
+	forward(LogLevel::Error, msg);
 }
 
 void LogSink::warning(const char *msg)
 {
-	forward(Severity::Warning, msg);
+	forward(LogLevel::Warning, msg);
 }
 
 void LogSink::info(const char *msg)
 {
-	forward(Severity::Info, msg);
+	forward(LogLevel::Info, msg);
+}
+
+void LogSink::debug(const char* msg)
+{
+	forward(LogLevel::Debug, msg);
 }
 
 void LogSink::trace(const char *msg)
 {
-	forward(Severity::Trace, msg);
+	forward(LogLevel::Trace, msg);
 }
 
-void LogSink::forward(Severity severity, const char *msg)
+void LogSink::forward(LogLevel level, const char *msg)
 {
 	LockType lock(m_mutex);
 
 	if (m_target)
 	{
-		m_target(severity, msg);
+		m_target(level, msg);
 	}
 }
 
