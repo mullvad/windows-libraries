@@ -7,15 +7,16 @@
 namespace common::logging
 {
 
-enum class Severity
+enum class LogLevel
 {
 	Error,
 	Warning,
 	Info,
+	Debug,
 	Trace
 };
 
-using LogTarget = std::function<void(Severity, const char *)>;
+using LogTarget = std::function<void(LogLevel, const char *)>;
 
 class LogSink : public ILogSink
 {
@@ -33,11 +34,12 @@ public:
 	virtual void error(const char *msg) override;
 	virtual void warning(const char *msg) override;
 	virtual void info(const char *msg) override;
+	virtual void debug(const char* msg) override;
 	virtual void trace(const char *msg) override;
 
 private:
 
-	void forward(Severity severity, const char *msg);
+	void forward(LogLevel level, const char *msg);
 
 	std::mutex m_mutex;
 	LogTarget m_target;
