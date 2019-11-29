@@ -42,6 +42,7 @@ public:
 		}
 	};
 
+	static std::set<NetworkAdapter> GetAllAdapters(ULONG family, ULONG flags);
 	static std::set<NetworkAdapter> GetAllAdapters();
 	static std::set<NetworkAdapter> GetTapAdapters(const std::set<NetworkAdapter>& adapters);
 

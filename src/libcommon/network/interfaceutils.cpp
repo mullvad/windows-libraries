@@ -10,13 +10,11 @@ namespace common::network
 {
 
 //static
-std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
+std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters(ULONG family, ULONG flags)
 {
 	ULONG bufferSize = 0;
 
-	const ULONG flags = GAA_FLAG_SKIP_UNICAST | GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_DNS_SERVER;
-
-	auto status = GetAdaptersAddresses(AF_INET, flags, nullptr, nullptr, &bufferSize);
+	auto status = GetAdaptersAddresses(family, flags, nullptr, nullptr, &bufferSize);
 
 	THROW_UNLESS(ERROR_BUFFER_OVERFLOW, status, "Probe for adapter listing buffer size");
 
@@ -24,9 +22,9 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
 	bufferSize *= 2;
 
 	std::vector<uint8_t> buffer(bufferSize);
+	auto addresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(&buffer[0]);
 
-	status = GetAdaptersAddresses(AF_INET, flags, nullptr,
-		reinterpret_cast<PIP_ADAPTER_ADDRESSES>(&buffer[0]), &bufferSize);
+	status = GetAdaptersAddresses(family, flags, nullptr, addresses, &bufferSize);
 
 	THROW_UNLESS(ERROR_SUCCESS, status, "Retrieve adapter listing");
 
@@ -34,7 +32,7 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
 
 	NciContext nci;
 
-	for (auto it = (PIP_ADAPTER_ADDRESSES)&buffer[0]; nullptr != it; it = it->Next)
+	for (auto it = addresses; nullptr != it; it = it->Next)
 	{
 		auto guid = common::string::ToWide(it->AdapterName);
 
@@ -75,6 +73,12 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
 	}
 
 	return adapters;
+}
+
+//static
+std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
+{
+	return GetAllAdapters(AF_INET, GAA_FLAG_SKIP_UNICAST | GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST);
 }
 
 //static
