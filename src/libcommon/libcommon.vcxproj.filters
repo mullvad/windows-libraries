@@ -48,6 +48,9 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="burstguard.cpp" />
+    <ClCompile Include="network\interfaceutils.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
     <ClCompile Include="network\ncicontext.cpp">
       <Filter>network</Filter>
     </ClCompile>
@@ -119,6 +122,9 @@
       <Filter>network</Filter>
     </ClInclude>
     <ClInclude Include="burstguard.h" />
+    <ClInclude Include="network\interfaceutils.h">
+      <Filter>network</Filter>
+    </ClInclude>
     <ClInclude Include="network\ncicontext.h">
       <Filter>network</Filter>
     </ClInclude>
