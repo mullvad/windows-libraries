@@ -1,5 +1,6 @@
 #pragma once
 
+#include <libcommon/network/ncicontext.h>
 #include <string>
 #include <set>
 #include <vector>
@@ -25,26 +26,14 @@ class InterfaceUtils
 
 public:
 
-	struct NetworkAdapter
+	class NetworkAdapter
 	{
+
+	public:
+
 		std::wstring guid;
 		std::wstring name;
 		std::wstring alias;
-
-		NetworkAdapter(
-			std::wstring _guid,
-			std::wstring _name,
-			std::wstring _alias,
-			PIP_ADAPTER_ADDRESSES entry,
-			std::shared_ptr<std::vector<uint8_t>> addressesBuffer
-		)
-			: guid(_guid)
-			, name(_name)
-			, alias(_alias)
-			, m_entry(entry)
-			, m_addressesBuffer(addressesBuffer)
-		{
-		}
 
 		bool operator<(const NetworkAdapter& rhs) const
 		{
@@ -57,6 +46,14 @@ public:
 		}
 
 	private:
+
+		NetworkAdapter(
+			const NciContext& nci,
+			std::shared_ptr<std::vector<uint8_t>> addressesBuffer,
+			PIP_ADAPTER_ADDRESSES entry
+		);
+
+		friend class InterfaceUtils;
 
 		PIP_ADAPTER_ADDRESSES m_entry;
 		std::shared_ptr<std::vector<uint8_t>> m_addressesBuffer;

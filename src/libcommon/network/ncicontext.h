@@ -31,8 +31,8 @@ public:
 	NciContext(NciContext&&) = default;
 	NciContext& operator=(NciContext&&) = default;
 
-	std::wstring getConnectionName(const GUID& guid);
-	void setConnectionName(const GUID& guid, const wchar_t* newName);
+	std::wstring getConnectionName(const GUID& guid) const;
+	void setConnectionName(const GUID& guid, const wchar_t* newName) const;
 };
 
 }

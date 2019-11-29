@@ -48,7 +48,7 @@ NciContext::~NciContext()
 	FreeLibrary(dllHandle);
 }
 
-std::wstring NciContext::getConnectionName(const GUID& guid)
+std::wstring NciContext::getConnectionName(const GUID& guid) const
 {
 	DWORD nameLen = 0;
 	DWORD status = m_nciGetConnectionName(&guid, nullptr, 0, &nameLen);
@@ -78,7 +78,7 @@ std::wstring NciContext::getConnectionName(const GUID& guid)
 	return buffer;
 }
 
-void NciContext::setConnectionName(const GUID& guid, const wchar_t* newName)
+void NciContext::setConnectionName(const GUID& guid, const wchar_t* newName) const
 {
 	const auto status = m_nciSetConnectionName(&guid, newName);
 	if (0 != status)

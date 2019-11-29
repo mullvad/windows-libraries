@@ -1,12 +1,55 @@
 #include "stdafx.h"
 #include "libcommon/network/interfaceutils.h"
-#include "libcommon/network/ncicontext.h"
 #include "libcommon/error.h"
 #include "libcommon/string.h"
 #include <algorithm>
 
 namespace common::network
 {
+
+InterfaceUtils::NetworkAdapter::NetworkAdapter(
+	const NciContext &nci,
+	std::shared_ptr<std::vector<uint8_t>> addressesBuffer,
+	PIP_ADAPTER_ADDRESSES entry
+)
+	: m_addressesBuffer(addressesBuffer)
+	, m_entry(entry)
+{
+	guid = common::string::ToWide(entry->AdapterName);
+
+	try
+	{
+		//
+		// FIXME:
+		// Work around incorrect alias sometimes
+		// being returned on Windows 8.
+		//
+		// Steps to reproduce:
+		// 1. Install NDIS 6 TAP driver v9.00.00.21.
+		// 2. Update driver to v9.24.2.601.
+		// 3. Rename TAP adapter.
+		//
+		// GetAdaptersAddresses() returns a generic name
+		// for the *first* adapter instead of the correct
+		// one, whereas ConvertInterfaceAliasToLuid() and
+		// ConvertInterfaceLuidToAlias() yield correct values.
+		//
+
+		IID guidObj = { 0 };
+		if (S_OK != IIDFromString(&guid[0], &guidObj))
+		{
+			throw std::runtime_error("IIDFromString() failed");
+		}
+
+		alias = nci.getConnectionName(guidObj);
+	}
+	catch (const std::exception&)
+	{
+		alias = entry->FriendlyName;
+	}
+
+	name = entry->Description;
+}
 
 //static
 std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters(ULONG family, ULONG flags)
@@ -33,44 +76,7 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters(ULONG fa
 
 	for (auto it = addresses; nullptr != it; it = it->Next)
 	{
-		auto guid = common::string::ToWide(it->AdapterName);
-
-		std::wstring name;
-
-		try
-		{
-			//
-			// FIXME:
-			// Hack to work around incorrect alias sometimes
-			// being returned on Windows 8.
-			//
-			// Steps to reproduce:
-			// 1. Install NDIS 6 TAP driver v9.00.00.21.
-			// 2. Update driver to v9.24.2.601.
-			// 3. Rename TAP adapter.
-			//
-			// GetAdaptersAddresses() returns a generic name
-			// for the *first* adapter instead of the correct
-			// one.
-			//
-
-			IID guidObj = { 0 };
-			if (S_OK != IIDFromString(&guid[0], &guidObj))
-			{
-				throw std::runtime_error("IIDFromString() failed");
-			}
-
-			name = nci.getConnectionName(guidObj);
-		}
-		catch (const std::exception&)
-		{
-			name = it->FriendlyName;
-		}
-
-		adapters.emplace(NetworkAdapter(guid,
-			it->Description, std::move(name),
-			it,
-			buffer));
+		adapters.emplace(NetworkAdapter(nci, buffer, it));
 	}
 
 	return adapters;
