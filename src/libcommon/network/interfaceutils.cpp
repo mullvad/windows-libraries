@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "libcommon/network/interfaceutils.h"
+#include "libcommon/network/ncicontext.h"
 #include "libcommon/error.h"
 #include "libcommon/string.h"
 #include <cstdint>
@@ -31,10 +32,46 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters()
 
 	std::set<NetworkAdapter> adapters;
 
+	NciContext nci;
+
 	for (auto it = (PIP_ADAPTER_ADDRESSES)&buffer[0]; nullptr != it; it = it->Next)
 	{
-		adapters.emplace(NetworkAdapter(common::string::ToWide(it->AdapterName),
-			it->Description, it->FriendlyName));
+		auto guid = common::string::ToWide(it->AdapterName);
+
+		std::wstring name;
+
+		try
+		{
+			//
+			// FIXME:
+			// Hack to work around incorrect alias sometimes
+			// being returned on Windows 8.
+			//
+			// Steps to reproduce:
+			// 1. Install NDIS 6 TAP driver v9.00.00.21.
+			// 2. Update driver to v9.24.2.601.
+			// 3. Rename TAP adapter.
+			//
+			// GetAdaptersAddresses() returns a generic name
+			// for the *first* adapter instead of the correct
+			// one.
+			//
+
+			IID guidObj = { 0 };
+			if (S_OK != IIDFromString(&guid[0], &guidObj))
+			{
+				throw std::runtime_error("IIDFromString() failed");
+			}
+
+			name = nci.getConnectionName(guidObj);
+		}
+		catch (const std::exception&)
+		{
+			name = it->FriendlyName;
+		}
+
+		adapters.emplace(NetworkAdapter(guid,
+			it->Description, std::move(name)));
 	}
 
 	return adapters;
