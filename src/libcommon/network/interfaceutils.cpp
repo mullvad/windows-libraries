@@ -3,7 +3,6 @@
 #include "libcommon/network/ncicontext.h"
 #include "libcommon/error.h"
 #include "libcommon/string.h"
-#include <cstdint>
 #include <algorithm>
 
 namespace common::network
@@ -21,8 +20,8 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters(ULONG fa
 	// Memory is cheap, this avoids a looping construct.
 	bufferSize *= 2;
 
-	std::vector<uint8_t> buffer(bufferSize);
-	auto addresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(&buffer[0]);
+	auto buffer = std::make_shared<std::vector<uint8_t>>(bufferSize);
+	auto addresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(&(*buffer)[0]);
 
 	status = GetAdaptersAddresses(family, flags, nullptr, addresses, &bufferSize);
 
@@ -69,7 +68,9 @@ std::set<InterfaceUtils::NetworkAdapter> InterfaceUtils::GetAllAdapters(ULONG fa
 		}
 
 		adapters.emplace(NetworkAdapter(guid,
-			it->Description, std::move(name)));
+			it->Description, std::move(name),
+			it,
+			buffer));
 	}
 
 	return adapters;
