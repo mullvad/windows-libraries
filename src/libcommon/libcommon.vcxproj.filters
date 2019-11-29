@@ -48,6 +48,9 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="burstguard.cpp" />
+    <ClCompile Include="network\nci.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applicationrunner.h" />
@@ -116,6 +119,9 @@
       <Filter>network</Filter>
     </ClInclude>
     <ClInclude Include="burstguard.h" />
+    <ClInclude Include="network\nci.h">
+      <Filter>network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="serialization">
