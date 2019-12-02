@@ -25,8 +25,11 @@ public:
 	Nci();
 	~Nci();
 
-	Nci(Nci&&) = delete;
-	Nci& operator=(Nci&&) = delete;
+	Nci(const Nci&) = delete;
+	Nci& operator=(const Nci&) = delete;
+
+	Nci(Nci &&other);
+	Nci &operator=(Nci &&other);
 
 	std::wstring getConnectionName(const GUID& guid) const;
 	void setConnectionName(const GUID& guid, const wchar_t* newName) const;

@@ -41,7 +41,27 @@ Nci::Nci()
 
 Nci::~Nci()
 {
-	FreeLibrary(m_dllHandle);
+	if (nullptr != m_dllHandle)
+	{
+		FreeLibrary(m_dllHandle);
+	}
+}
+
+Nci::Nci(Nci &&other)
+	: m_dllHandle(other.m_dllHandle)
+	, m_nciGetConnectionName(other.m_nciGetConnectionName)
+	, m_nciSetConnectionName(other.m_nciSetConnectionName)
+{
+	other.m_dllHandle = nullptr;
+}
+
+Nci& Nci::operator=(Nci &&other)
+{
+	m_dllHandle = other.m_dllHandle;
+	m_nciGetConnectionName = other.m_nciGetConnectionName;
+	m_nciSetConnectionName = other.m_nciSetConnectionName;
+	other.m_dllHandle = nullptr;
+	return *this;
 }
 
 std::wstring Nci::getConnectionName(const GUID& guid) const
