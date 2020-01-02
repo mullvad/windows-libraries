@@ -174,7 +174,7 @@ std::wstring FormatLocalTime(const FILETIME &filetime)
 
 std::wstring Lower(const std::wstring &str)
 {
-	auto bufferSize = str.size() + 1;
+	auto bufferSize = str.size() + sizeof(L'\0');
 
 	auto buffer = std::make_unique<wchar_t[]>(bufferSize);
 	wcscpy_s(buffer.get(), bufferSize, str.c_str());
@@ -186,7 +186,7 @@ std::wstring Lower(const std::wstring &str)
 
 std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &delimiters)
 {
-	auto bufferSize = str.size() + 1;
+	auto bufferSize = str.size() + sizeof(L'\0');
 
 	auto buffer = std::make_unique<wchar_t[]>(bufferSize);
 	wcscpy_s(buffer.get(), bufferSize, str.c_str());
