@@ -108,7 +108,6 @@
     </ClInclude>
     <ClInclude Include="valuemapper.h" />
     <ClInclude Include="resourcedata.h" />
-    <ClInclude Include="synchronization.h" />
     <ClInclude Include="logging\ilogsink.h">
       <Filter>logging</Filter>
     </ClInclude>
