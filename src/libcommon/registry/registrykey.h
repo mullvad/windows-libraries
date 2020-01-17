@@ -25,6 +25,8 @@ public:
 		ExpandableString = REG_EXPAND_SZ,
 	};
 
+	void flush();
+
 	void writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type = ValueStringType::RegularString);
 	void writeValue(const std::wstring &valueName, uint32_t valueData);
 	void writeValue(const std::wstring &valueName, uint64_t valueData);
