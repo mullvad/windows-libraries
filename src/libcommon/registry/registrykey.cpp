@@ -15,6 +15,11 @@ RegistryKey::~RegistryKey()
 	RegCloseKey(m_key);
 }
 
+void RegistryKey::flush()
+{
+	THROW_UNLESS(ERROR_SUCCESS, RegFlushKey(m_key), "Flush registry key");
+}
+
 void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type)
 {
 	auto dataLength = static_cast<DWORD>((valueData.size() + 1) * sizeof(wchar_t));
