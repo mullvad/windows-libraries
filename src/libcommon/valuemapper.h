@@ -9,37 +9,21 @@
 namespace common
 {
 
-template<typename T, typename U>
-class ValueMapper
+struct ValueMapper
 {
-public:
-
-	using value_type = std::pair<T, U>;
-
-	ValueMapper(std::initializer_list<value_type> values)
+	template<typename T, typename U, std::size_t S>
+	static U map(T t, const std::pair<T, U> (&dictionary)[S])
 	{
-		m_values.reserve(values.size());
-		std::copy(values.begin(), values.end(), std::back_inserter(m_values));
-	}
-
-	U map(T t) const
-	{
-		auto it = std::find_if(m_values.begin(), m_values.end(), [&t](const value_type &tuple)
+		for (const auto &entry : dictionary)
 		{
-			return t == tuple.first;
-		});
-
-		if (m_values.end() == it)
-		{
-			throw std::runtime_error("Could not map between values");
+			if (t == entry.first)
+			{
+				return entry.second;
+			}
 		}
 
-		return it->second;
+		throw std::runtime_error("Could not map between values");
 	}
-
-private:
-
-	std::vector<value_type> m_values;
 };
 
 }
