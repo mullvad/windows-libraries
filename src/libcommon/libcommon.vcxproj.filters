@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="applicationrunner.cpp" />
     <ClCompile Include="binarycomposer.cpp" />
     <ClCompile Include="error.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -27,7 +26,6 @@
     </ClCompile>
     <ClCompile Include="fileenumerator.cpp" />
     <ClCompile Include="security.cpp" />
-    <ClCompile Include="process.cpp" />
     <ClCompile Include="registry\registry.cpp">
       <Filter>registry</Filter>
     </ClCompile>
@@ -51,9 +49,14 @@
     <ClCompile Include="network\nci.cpp">
       <Filter>network</Filter>
     </ClCompile>
+    <ClCompile Include="process\applicationrunner.cpp">
+      <Filter>process</Filter>
+    </ClCompile>
+    <ClCompile Include="process\process.cpp">
+      <Filter>process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="applicationrunner.h" />
     <ClInclude Include="binarycomposer.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="error.h" />
@@ -93,7 +96,6 @@
     </ClInclude>
     <ClInclude Include="fileenumerator.h" />
     <ClInclude Include="security.h" />
-    <ClInclude Include="process.h" />
     <ClInclude Include="registry\registry.h">
       <Filter>registry</Filter>
     </ClInclude>
@@ -121,6 +123,12 @@
     <ClInclude Include="network\nci.h">
       <Filter>network</Filter>
     </ClInclude>
+    <ClInclude Include="process\applicationrunner.h">
+      <Filter>process</Filter>
+    </ClInclude>
+    <ClInclude Include="process\process.h">
+      <Filter>process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="serialization">
@@ -137,6 +145,9 @@
     </Filter>
     <Filter Include="network">
       <UniqueIdentifier>{cdd9835f-e016-46fa-bdb4-847181ac118d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="process">
+      <UniqueIdentifier>{3b5ae5ea-efbe-40df-93c2-0c55b7d8cc35}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
