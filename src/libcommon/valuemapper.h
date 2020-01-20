@@ -5,41 +5,43 @@
 #include <vector>
 #include <stdexcept>
 #include <initializer_list>
+#include <optional>
+#include <sstream>
 
 namespace common
 {
 
-template<typename T, typename U>
-class ValueMapper
+struct ValueMapper
 {
-public:
-
-	using value_type = std::pair<T, U>;
-
-	ValueMapper(std::initializer_list<value_type> values)
+	template<typename T, typename U, std::size_t S>
+	static std::optional<U> TryMap(T t, const std::pair<T, U>(&dictionary)[S])
 	{
-		m_values.reserve(values.size());
-		std::copy(values.begin(), values.end(), std::back_inserter(m_values));
+		for (const auto &entry : dictionary)
+		{
+			if (t == entry.first)
+			{
+				return std::make_optional(entry.second);
+			}
+		}
+		return std::nullopt;
 	}
 
-	U map(T t) const
+	template<typename T, typename U, std::size_t S>
+	static U Map(T t, const std::pair<T, U> (&dictionary)[S])
 	{
-		auto it = std::find_if(m_values.begin(), m_values.end(), [&t](const value_type &tuple)
+		auto result = TryMap(t, dictionary);
+		if (result.has_value())
 		{
-			return t == tuple.first;
-		});
-
-		if (m_values.end() == it)
-		{
-			throw std::runtime_error("Could not map between values");
+			return result.value();
 		}
 
-		return it->second;
+		std::stringstream ss;
+		ss << "Could not map between values: "
+			<< typeid(T).name() << " -> " << typeid(U).name();
+
+		throw std::runtime_error(ss.str());
 	}
 
-private:
-
-	std::vector<value_type> m_values;
 };
 
 }
