@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "process.h"
-#include "error.h"
+#include "../error.h"
 #include <stdexcept>
 #include <filesystem>
 

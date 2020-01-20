@@ -1,11 +1,11 @@
 #pragma once
 
-#include "memory.h"
+#include "../memory.h"
 #include <windows.h>
 #include <memory>
 #include <string>
 
-namespace common
+namespace common::process
 {
 
 class ApplicationRunner
@@ -41,12 +41,12 @@ private:
 	static unsigned __stdcall ReadThread(void *p);
 
 	DWORD m_processId;
-	memory::UniqueHandle m_process;
+	common::memory::UniqueHandle m_process;
 
-	memory::UniqueHandle m_stdInRead;
-	memory::UniqueHandle m_stdInWrite;
-	memory::UniqueHandle m_stdOutRead;
-	memory::UniqueHandle m_stdOutWrite;
+	common::memory::UniqueHandle m_stdInRead;
+	common::memory::UniqueHandle m_stdInWrite;
+	common::memory::UniqueHandle m_stdOutRead;
+	common::memory::UniqueHandle m_stdOutWrite;
 };
 
 }

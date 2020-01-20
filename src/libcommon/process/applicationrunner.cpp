@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "applicationrunner.h"
-#include "error.h"
-#include "memory.h"
+#include "../error.h"
+#include "../memory.h"
 #include <memory>
 #include <vector>
 #include <windows.h>
@@ -9,7 +9,7 @@
 
 using UniqueHandle = common::memory::UniqueHandle;
 
-namespace common
+namespace common::process
 {
 
 ApplicationRunner::ApplicationRunner(const std::wstring &path, const std::wstring &args, DWORD creationFlags)
