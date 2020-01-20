@@ -83,11 +83,12 @@ std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &de
 	};
 }
 
-std::wstring FormatIpv4(uint32_t ip)
+template<>
+std::wstring FormatIpv4<AddressOrder::HostByteOrder>(uint32_t ip)
 {
 	std::wstringstream ss;
 
-	ss	<< ((ip & 0xFF000000) >> 24) << L'.'
+	ss << ((ip & 0xFF000000) >> 24) << L'.'
 		<< ((ip & 0x00FF0000) >> 16) << L'.'
 		<< ((ip & 0x0000FF00) >> 8) << L'.'
 		<< ((ip & 0x000000FF));
@@ -95,11 +96,15 @@ std::wstring FormatIpv4(uint32_t ip)
 	return ss.str();
 }
 
-std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix)
+template<>
+std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
 {
 	std::wstringstream ss;
 
-	ss << FormatIpv4(ip) << L"/" << routingPrefix;
+	ss << ((ip & 0x000000FF)) << L'.'
+		<< ((ip & 0x0000FF00) >> 8) << L'.'
+		<< ((ip & 0x00FF0000) >> 16) << L'.'
+		<< ((ip & 0xFF000000) >> 24);
 
 	return ss.str();
 }

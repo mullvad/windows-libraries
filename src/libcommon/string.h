@@ -37,12 +37,25 @@ std::wstring FormatFlags(std::vector<std::pair<T, std::wstring> > &definitions, 
 	return Join(present);
 }
 
-// Format network byte order address.
+enum class AddressOrder
+{
+	HostByteOrder,
+	NetworkByteOrder
+};
+
+// Format IPv4 address.
+template<AddressOrder byteOrder = AddressOrder::HostByteOrder>
 std::wstring FormatIpv4(uint32_t ip);
 
-// TODO: Fix later if intending to produce user facing strings.
-// This is a naive implementation that always formats four bytes.
-std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix);
+template<AddressOrder byteOrder = AddressOrder::HostByteOrder>
+std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix)
+{
+	std::wstringstream ss;
+
+	ss << FormatIpv4<byteOrder>(ip) << L"/" << routingPrefix;
+
+	return ss.str();
+}
 
 // TODO: Format into compact representation.
 std::wstring FormatIpv6(const uint8_t ip[16]);
