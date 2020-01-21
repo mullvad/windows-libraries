@@ -8,6 +8,21 @@
 
 namespace common::error {
 
+namespace
+{
+
+__declspec(noreturn) void ThrowFormatted(const char *msg)
+{
+	if (std::current_exception())
+	{
+		std::throw_with_nested(std::runtime_error(msg));
+	}
+
+	throw std::runtime_error(msg);
+}
+
+} // anonymous namespace
+
 std::wstring FormatWindowsError(DWORD errorCode)
 {
 	LPWSTR buffer;
@@ -57,18 +72,23 @@ std::string FormatWindowsErrorPlain(DWORD errorCode)
 	return result;
 }
 
-void Throw(const char *operation, DWORD errorCode)
+void Throw(const char *operation, DWORD errorCode, const char *file, size_t line)
 {
 	std::stringstream ss;
 
-	ss << operation << ": " << common::error::FormatWindowsErrorPlain(errorCode);
+	ss << operation << ": " << common::error::FormatWindowsErrorPlain(errorCode)
+		<< " (" << file << ": " << line << ")";
 
-	if (std::current_exception())
-	{
-		std::throw_with_nested(std::runtime_error(ss.str()));
-	}
+	ThrowFormatted(ss.str().c_str());
+}
 
-	throw std::runtime_error(ss.str());
+void Throw(const char *operation, const char *file, size_t line)
+{
+	std::stringstream ss;
+
+	ss << operation << " (" << file << ": " << line << ")";
+
+	ThrowFormatted(ss.str().c_str());
 }
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)
