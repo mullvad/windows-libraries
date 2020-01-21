@@ -5,8 +5,37 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <cstring>
 
 namespace common::error {
+
+namespace
+{
+
+[[noreturn]] void ThrowFormatted(const char *msg)
+{
+	if (std::current_exception())
+	{
+		std::throw_with_nested(std::runtime_error(msg));
+	}
+
+	throw std::runtime_error(msg);
+}
+
+const char *IsolateFilename(const char *filepath)
+{
+	const auto slash = strrchr(filepath, '/');
+	const auto backslash = strrchr(filepath, '\\');
+
+	if (nullptr == slash && nullptr == backslash)
+	{
+		return filepath;
+	}
+
+	return max(slash, backslash) + 1;
+}
+
+} // anonymous namespace
 
 std::wstring FormatWindowsError(DWORD errorCode)
 {
@@ -57,18 +86,23 @@ std::string FormatWindowsErrorPlain(DWORD errorCode)
 	return result;
 }
 
-void Throw(const char *operation, DWORD errorCode)
+void Throw(const char *operation, DWORD errorCode, const char *file, size_t line)
 {
 	std::stringstream ss;
 
-	ss << operation << ": " << common::error::FormatWindowsErrorPlain(errorCode);
+	ss << operation << ": " << common::error::FormatWindowsErrorPlain(errorCode)
+		<< " (" << IsolateFilename(file) << ": " << line << ")";
 
-	if (std::current_exception())
-	{
-		std::throw_with_nested(std::runtime_error(ss.str()));
-	}
+	ThrowFormatted(ss.str().c_str());
+}
 
-	throw std::runtime_error(ss.str());
+void Throw(const char *operation, const char *file, size_t line)
+{
+	std::stringstream ss;
+
+	ss << operation << " (" << IsolateFilename(file) << ": " << line << ")";
+
+	ThrowFormatted(ss.str().c_str());
 }
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)

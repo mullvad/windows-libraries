@@ -105,7 +105,7 @@ void Registry::DeleteKey(HKEY key, const std::wstring &subkey, RegistryView view
 	if (ERROR_SUCCESS != status
 		&& ERROR_FILE_NOT_FOUND != status)
 	{
-		common::error::Throw("Delete registry key", status);
+		THROW_WITH_CODE("Delete registry key", status);
 	}
 }
 
@@ -138,7 +138,7 @@ void Registry::DeleteTree(HKEY key, const std::wstring &subkey, RegistryView vie
 	if (ERROR_SUCCESS != status
 		&& ERROR_FILE_NOT_FOUND != status)
 	{
-		common::error::Throw("Delete registry tree", status);
+		THROW_WITH_CODE("Delete registry tree", status);
 	}
 }
 

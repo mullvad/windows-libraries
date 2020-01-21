@@ -30,7 +30,7 @@ void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enab
 	//
 	if (FALSE == status || ERROR_SUCCESS != error)
 	{
-		common::error::Throw("Adjust token privileges", error);
+		THROW_WITH_CODE("Adjust token privileges", error);
 	}
 }
 
