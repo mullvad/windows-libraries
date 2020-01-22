@@ -1,9 +1,9 @@
 #pragma once
 
+#include "error.h"
 #include <algorithm>
 #include <utility>
 #include <vector>
-#include <stdexcept>
 #include <initializer_list>
 #include <optional>
 #include <sstream>
@@ -39,9 +39,8 @@ struct ValueMapper
 		ss << "Could not map between values: "
 			<< typeid(T).name() << " -> " << typeid(U).name();
 
-		throw std::runtime_error(ss.str());
+		THROW_UNCONDITIONALLY(ss.str().c_str());
 	}
-
 };
 
 }

@@ -11,10 +11,7 @@ RegistryMonitor::RegistryMonitor(RegistryMonitorArguments &&args)
 {
 	m_event = CreateEventW(nullptr, TRUE, FALSE, nullptr);
 
-	if (nullptr == m_event)
-	{
-		throw std::runtime_error("Could not create event for registry key monitoring");
-	}
+	THROW_IF(nullptr, m_event, "Could not create event for registry key monitoring");
 }
 
 RegistryMonitor::~RegistryMonitor()
@@ -51,14 +48,14 @@ HANDLE RegistryMonitor::queueSingleEvent()
 			}
 			default:
 			{
-				throw std::runtime_error("Invalid event flag");
+				THROW_UNCONDITIONALLY("Invalid event flag");
 			}
 		}
 	}
 
 	const auto status = RegNotifyChangeKeyValue(m_args.key, m_args.monitorTree, filter, m_event, TRUE);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Activate registry monitoring");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Activate registry monitoring");
 
 	m_hasRequestedNotification = true;
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "process.h"
 #include "../error.h"
+#include "../string.h"
 #include <stdexcept>
 #include <filesystem>
 
@@ -52,7 +53,8 @@ DWORD GetProcessIdFromName(const std::wstring &processName, std::function<bool(c
 		}
 	}
 
-	throw std::runtime_error("Could not find named process");
+	const auto msg = std::wstring(L"Could not find process with name \"").append(processName).append(L"\"");
+	THROW_UNCONDITIONALLY(common::string::ToAnsi(msg).c_str());
 }
 
 std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processName,
@@ -110,7 +112,7 @@ void Run(const std::wstring &path)
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
 	{
-		throw std::runtime_error("Invalid path spec for subprocess");
+		THROW_UNCONDITIONALLY("Invalid path specification for subprocess");
 	}
 
 	const auto workingDir = fspath.parent_path();
@@ -135,7 +137,7 @@ void RunInContext(HANDLE securityContext, const std::wstring &path)
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
 	{
-		throw std::runtime_error("Invalid path spec for subprocess");
+		THROW_UNCONDITIONALLY("Invalid path specification for subprocess");
 	}
 
 	const auto workingDir = fspath.parent_path();

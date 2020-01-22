@@ -21,10 +21,7 @@ BinaryResource LoadBinaryResource(HMODULE moduleHandle, uint32_t resourceId)
 
 	result.data = reinterpret_cast<uint8_t *>(LockResource(resourceHandle));
 
-	if (nullptr == result.data)
-	{
-		throw std::runtime_error("Failed to lock resource");
-	}
+	THROW_IF(nullptr, result.data, "Failed to lock resource");
 
 	return result;
 }

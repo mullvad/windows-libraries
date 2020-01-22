@@ -6,26 +6,31 @@
 #include <memory>
 #include <windows.h>
 
-#define THROW_IF(unwanted, actual, operation)\
+#define THROW_CODE_IF(unwanted, actual, operation)\
 if(actual == unwanted)\
 {\
 	::common::error::Throw(operation, actual, __FILE__, __LINE__);\
 }\
 
-#define THROW_UNLESS(expected, actual, operation)\
+#define THROW_CODE_UNLESS(expected, actual, operation)\
 if(actual != expected)\
 {\
 	::common::error::Throw(operation, actual, __FILE__, __LINE__);\
 }\
 
-#define THROW_GLE_UNLESS(expected, actual, operation)\
-if(actual != expected)\
+#define THROW_CODE(code, operation)\
 {\
-	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
+	::common::error::Throw(operation, code, __FILE__, __LINE__);\
 }\
 
 #define THROW_GLE_IF(unwanted, actual, operation)\
 if(actual == unwanted)\
+{\
+	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
+}\
+
+#define THROW_GLE_UNLESS(expected, actual, operation)\
+if(actual != expected)\
 {\
 	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
 }\
@@ -35,14 +40,21 @@ if(actual == unwanted)\
 	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
 }\
 
-#define THROW_UNCONDITIONALLY(operation)\
+#define THROW_IF(unwanted, actual, operation)\
+if(actual == unwanted)\
 {\
 	::common::error::Throw(operation, __FILE__, __LINE__);\
 }\
 
-#define THROW_WITH_CODE(operation, code)\
+#define THROW_UNLESS(expected, actual, operation)\
+if(actual != expected)\
 {\
-	::common::error::Throw(operation, code, __FILE__, __LINE__);\
+	::common::error::Throw(operation, __FILE__, __LINE__);\
+}\
+
+#define THROW_UNCONDITIONALLY(operation)\
+{\
+	::common::error::Throw(operation, __FILE__, __LINE__);\
 }\
 
 namespace common::error {

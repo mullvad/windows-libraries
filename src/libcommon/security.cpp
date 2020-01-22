@@ -30,7 +30,7 @@ void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enab
 	//
 	if (FALSE == status || ERROR_SUCCESS != error)
 	{
-		THROW_WITH_CODE("Adjust token privileges", error);
+		THROW_CODE(error, "Adjust token privileges");
 	}
 }
 
@@ -44,7 +44,7 @@ void AdjustCurrentThreadTokenPrivilege(const std::wstring &privilege, bool enabl
 	{
 		const auto error = GetLastError();
 
-		THROW_UNLESS(ERROR_NO_TOKEN, error, "Acquire access token for current thread");
+		THROW_CODE_UNLESS(ERROR_NO_TOKEN, error, "Acquire access token for current thread");
 
 		THROW_GLE_IF(FALSE, ImpersonateSelf(SecurityImpersonation), "Impersonate self");
 
@@ -117,7 +117,7 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 		&securityDescriptor
 	);
 
-	THROW_UNLESS(ERROR_SUCCESS, getSecurityStatus, "Retrieve DACL for object");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, getSecurityStatus, "Retrieve DACL for object");
 
 	common::memory::ScopeDestructor sd;
 
@@ -139,7 +139,7 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 
 	const auto setEntriesStatus = SetEntriesInAclW(1, &ea, currentAcl, &updatedAcl);
 
-	THROW_UNLESS(ERROR_SUCCESS, setEntriesStatus, "Create updated DACL");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, setEntriesStatus, "Create updated DACL");
 
 	sd += [&updatedAcl]()
 	{
@@ -157,7 +157,7 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 		nullptr
 	);
 
-	THROW_UNLESS(ERROR_SUCCESS, setSecurityStatus, "Apply updated DACL")
+	THROW_CODE_UNLESS(ERROR_SUCCESS, setSecurityStatus, "Apply updated DACL");
 }
 
 UniqueHandle DuplicateSecurityContext(DWORD processId)

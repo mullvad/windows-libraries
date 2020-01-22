@@ -26,7 +26,7 @@ Nci::Nci()
 	if (nullptr == m_nciGetConnectionName)
 	{
 		FreeLibrary(m_dllHandle);
-		throw std::runtime_error("Failed to obtain pointer to NciGetConnectionName");
+		THROW_UNCONDITIONALLY("Failed to obtain pointer to NciGetConnectionName");
 	}
 
 	m_nciSetConnectionName = reinterpret_cast<nciSetConnectionNameFunc>(
@@ -35,7 +35,7 @@ Nci::Nci()
 	if (nullptr == m_nciSetConnectionName)
 	{
 		FreeLibrary(m_dllHandle);
-		throw std::runtime_error("Failed to obtain pointer to NciSetConnectionName");
+		THROW_UNCONDITIONALLY("Failed to obtain pointer to NciSetConnectionName");
 	}
 }
 
@@ -48,28 +48,28 @@ std::wstring Nci::getConnectionName(const GUID& guid) const
 {
 	DWORD nameLen = 0; // including L'\0'
 
-	if (0 != m_nciGetConnectionName(&guid, nullptr, 0, &nameLen))
-	{
-		throw std::runtime_error("NciGetConnectionName() failed");
-	}
+	THROW_UNLESS(0,
+		m_nciGetConnectionName(&guid, nullptr, 0, &nameLen),
+		"NciGetConnectionName() failed"
+	);
 
 	std::vector<wchar_t> buffer;
 	buffer.resize(nameLen / sizeof(wchar_t));
 
-	if (0 != m_nciGetConnectionName(&guid, &buffer[0], nameLen, nullptr))
-	{
-		throw std::runtime_error("NciGetConnectionName() failed");
-	}
+	THROW_UNLESS(0,
+		m_nciGetConnectionName(&guid, &buffer[0], nameLen, nullptr),
+		"NciGetConnectionName() failed"
+	);
 
 	return buffer.data();
 }
 
 void Nci::setConnectionName(const GUID& guid, const wchar_t* newName) const
 {
-	if (0 != m_nciSetConnectionName(&guid, newName))
-	{
-		throw std::runtime_error("NciSetConnectionName() failed");
-	}
+	THROW_UNLESS(0,
+		m_nciSetConnectionName(&guid, newName),
+		"NciSetConnectionName() failed"
+	);
 }
 
 }

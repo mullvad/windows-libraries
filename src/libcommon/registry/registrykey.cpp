@@ -17,7 +17,7 @@ RegistryKey::~RegistryKey()
 
 void RegistryKey::flush()
 {
-	THROW_UNLESS(ERROR_SUCCESS, RegFlushKey(m_key), "Flush registry key");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, RegFlushKey(m_key), "Flush registry key");
 }
 
 void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &valueData, ValueStringType type)
@@ -27,7 +27,7 @@ void RegistryKey::writeValue(const std::wstring &valueName, const std::wstring &
 	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, static_cast<DWORD>(type),
 		reinterpret_cast<const BYTE *>(valueData.c_str()), dataLength);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Write registry value");
 }
 
 void RegistryKey::writeValue(const std::wstring &valueName, uint32_t valueData)
@@ -35,7 +35,7 @@ void RegistryKey::writeValue(const std::wstring &valueName, uint32_t valueData)
 	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_DWORD,
 		reinterpret_cast<const BYTE *>(&valueData), sizeof(uint32_t));
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Write registry value");
 }
 
 void RegistryKey::writeValue(const std::wstring &valueName, uint64_t valueData)
@@ -43,7 +43,7 @@ void RegistryKey::writeValue(const std::wstring &valueName, uint64_t valueData)
 	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_QWORD,
 		reinterpret_cast<const BYTE *>(&valueData), sizeof(uint64_t));
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Write registry value");
 }
 
 void RegistryKey::writeValue(const std::wstring &valueName, const std::vector<uint8_t> &valueData)
@@ -53,7 +53,7 @@ void RegistryKey::writeValue(const std::wstring &valueName, const std::vector<ui
 	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_BINARY,
 		&valueData[0], dataLength);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Write registry value");
 }
 
 void RegistryKey::writeValue(const std::wstring &valueName, const std::vector<std::wstring> &valueData)
@@ -90,14 +90,14 @@ void RegistryKey::writeValue(const std::wstring &valueName, const std::vector<st
 	const auto status = RegSetValueExW(m_key, valueName.c_str(), 0, REG_MULTI_SZ,
 		reinterpret_cast<const BYTE *>(&buffer[0]), dataLength);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Write registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Write registry value");
 }
 
 void RegistryKey::deleteValue(const std::wstring &valueName)
 {
 	const auto status = RegDeleteValueW(m_key, valueName.c_str());
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Delete registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Delete registry value");
 }
 
 std::wstring RegistryKey::readString(const std::wstring &valueName, ValueStringType type) const
@@ -205,7 +205,7 @@ void RegistryKey::enumerateSubKeys(std::function<bool(const std::wstring &)> cal
 	const auto queryStatus = RegQueryInfoKeyW(m_key, nullptr, nullptr, nullptr, nullptr,
 		&longestSubKeyName, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, queryStatus, "Query for longest subkey name length");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, queryStatus, "Query for longest subkey name length");
 
 	std::vector<wchar_t> buffer(longestSubKeyName + 1);
 
@@ -230,7 +230,7 @@ void RegistryKey::enumerateSubKeys(std::function<bool(const std::wstring &)> cal
 			continue;
 		}
 
-		THROW_UNLESS(ERROR_SUCCESS, enumStatus, "Enumerate next subkey");
+		THROW_CODE_UNLESS(ERROR_SUCCESS, enumStatus, "Enumerate next subkey");
 
 		if (false == callback(std::wstring(&buffer[0])))
 		{
@@ -248,7 +248,7 @@ void RegistryKey::enumerateValues(std::function<bool(const std::wstring &, uint3
 	const auto queryStatus = RegQueryInfoKeyW(m_key, nullptr, nullptr, nullptr, nullptr,
 		nullptr, nullptr, nullptr, &longestValueName, nullptr, nullptr, nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, queryStatus, "Query for longest value name length");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, queryStatus, "Query for longest value name length");
 
 	std::vector<wchar_t> buffer(longestValueName + 1);
 
@@ -274,7 +274,7 @@ void RegistryKey::enumerateValues(std::function<bool(const std::wstring &, uint3
 			continue;
 		}
 
-		THROW_UNLESS(ERROR_SUCCESS, enumStatus, "Enumerate next value");
+		THROW_CODE_UNLESS(ERROR_SUCCESS, enumStatus, "Enumerate next value");
 
 		if (false == callback(std::wstring(&buffer[0]), valueType))
 		{
@@ -292,12 +292,9 @@ std::vector<uint8_t> RegistryKey::readRaw(const std::wstring &valueName, DWORD d
 
 	auto status = RegQueryValueExW(m_key, valueName.c_str(), nullptr, &actualDataType, nullptr, &dataSize);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Query for registry value data type and data length");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Query for registry value data type and data length");
 
-	if (actualDataType != dataType)
-	{
-		throw std::runtime_error("Unexpected registry value data type");
-	}
+	THROW_UNLESS(dataType, actualDataType, "Unexpected registry value data type");
 
 	if (0 == dataSize)
 	{
@@ -308,7 +305,7 @@ std::vector<uint8_t> RegistryKey::readRaw(const std::wstring &valueName, DWORD d
 
 	status = RegQueryValueExW(m_key, valueName.c_str(), nullptr, nullptr, &buffer[0], &dataSize);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Read registry value");
+	THROW_CODE_UNLESS(ERROR_SUCCESS, status, "Read registry value");
 
 	return buffer;
 }

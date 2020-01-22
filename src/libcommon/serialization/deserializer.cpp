@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "deserializer.h"
-#include <stdexcept>
+#include "../error.h"
 
 namespace common::serialization
 {
@@ -87,17 +87,14 @@ void Deserializer::validateType(TypeTag type)
 
 	read(&readType, sizeof(uint8_t));
 
-	if (readType != static_cast<uint8_t>(type))
-	{
-		throw std::runtime_error("Unexpected data type in stream");
-	}
+	THROW_UNLESS(static_cast<uint8_t>(type), readType, "Unexpected data type in stream");
 }
 
 void Deserializer::read(void *data, size_t length)
 {
 	if (m_offset + length > m_blob.size())
 	{
-		throw std::runtime_error("Read probe passed end of stream");
+		THROW_UNCONDITIONALLY("Read probe passed end of stream");
 	}
 
 	memcpy(data, &m_blob[m_offset], length);

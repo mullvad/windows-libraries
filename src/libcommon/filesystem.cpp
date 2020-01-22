@@ -57,7 +57,7 @@ void Mkdir(const std::wstring &path)
 	{
 		auto msg = std::string("Failed to create directory: ").append(common::string::ToAnsi(target));
 
-		throw std::runtime_error(msg.c_str());
+		THROW_UNCONDITIONALLY(msg.c_str());
 	}
 }
 
@@ -67,16 +67,12 @@ std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE u
 
 	const auto status = SHGetKnownFolderPath(folderId, flags, userToken, &folder);
 
-	if (S_OK == status)
-	{
-		std::wstring result(folder);
+	THROW_UNLESS(S_OK, status, "Failed to retrieve \"known folder\" path");
 
-		CoTaskMemFree(folder);
+	std::wstring result(folder);
+	CoTaskMemFree(folder);
 
-		return result;
-	}
-
-	throw std::runtime_error("Failed to retrieve \"known folder\" path");
+	return result;
 }
 
 ScopedNativeFileSystem::ScopedNativeFileSystem()

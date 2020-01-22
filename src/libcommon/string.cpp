@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "string.h"
 #include "memory.h"
+#include "error.h"
 #include <algorithm>
 #include <iomanip>
 #include <memory>
 #include <sddl.h>
 #include <sstream>
-#include <stdexcept>
 #include <wchar.h>
 
 namespace common::string {
@@ -15,12 +15,10 @@ std::wstring FormatGuid(const GUID &guid)
 {
 	LPOLESTR buffer;
 
-	auto status = StringFromCLSID(guid, &buffer);
-
-	if (status != S_OK)
-	{
-		throw std::runtime_error("Failed to format GUID");
-	}
+	THROW_UNLESS(S_OK,
+		StringFromCLSID(guid, &buffer),
+		"Failed to format GUID"
+	);
 
 	std::wstring formatted(buffer);
 
@@ -33,12 +31,10 @@ std::wstring FormatSid(const SID &sid)
 {
 	LPWSTR buffer;
 
-	auto status = ConvertSidToStringSidW(const_cast<SID *>(&sid), &buffer);
-
-	if (0 == status)
-	{
-		throw std::runtime_error("Failed to format SID");
-	}
+	THROW_IF(0,
+		ConvertSidToStringSidW(const_cast<SID*>(&sid), &buffer),
+		"Failed to format SID"
+	);
 
 	std::wstring formatted(buffer);
 
@@ -143,10 +139,10 @@ std::wstring FormatTime(const FILETIME &filetime)
 {
 	FILETIME ft2;
 
-	if (FALSE == FileTimeToLocalFileTime(&filetime, &ft2))
-	{
-		throw std::runtime_error("Failed to convert time");
-	}
+	THROW_IF(FALSE,
+		FileTimeToLocalFileTime(&filetime, &ft2),
+		"Failed to convert time"
+	);
 
 	return FormatLocalTime(ft2);
 }
@@ -155,10 +151,10 @@ std::wstring FormatLocalTime(const FILETIME &filetime)
 {
 	SYSTEMTIME st;
 
-	if (FALSE == FileTimeToSystemTime(&filetime, &st))
-	{
-		throw std::runtime_error("Failed to convert time");
-	}
+	THROW_IF(FALSE,
+		FileTimeToSystemTime(&filetime, &st),
+		"Failed to convert time"
+	);
 
 	std::wstringstream ss;
 
@@ -237,7 +233,7 @@ std::wstring Summary(const std::wstring &str, size_t max)
 
 	if (max < paddingLength)
 	{
-		throw std::runtime_error("Requested summary is too short");
+		THROW_UNCONDITIONALLY("Requested summary is too short");
 	}
 
 	auto summary = str.substr(0, max - paddingLength);

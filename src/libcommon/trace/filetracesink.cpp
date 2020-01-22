@@ -21,7 +21,7 @@ FileTraceSink::FileTraceSink(const std::wstring &file)
 		const auto error = GetLastError();
 		const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
 
-		THROW_WITH_CODE(msg.c_str(), error);
+		THROW_CODE(error, msg.c_str());
 	}
 }
 
