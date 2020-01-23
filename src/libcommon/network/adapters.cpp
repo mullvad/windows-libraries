@@ -2,7 +2,6 @@
 #include "adapters.h"
 #include "libcommon/error.h"
 #include <sstream>
-#include <stdexcept>
 
 namespace common::network
 {
@@ -51,7 +50,10 @@ Adapters::Adapters(DWORD family, DWORD flags)
 			return;
 		}
 
-		THROW_UNLESS(ERROR_BUFFER_OVERFLOW, status, "Probe required buffer size for GetAdaptersAddresses");
+		if (ERROR_BUFFER_OVERFLOW != status)
+		{
+			THROW_WINDOWS_ERROR(status, "Probe required buffer size for GetAdaptersAddresses");
+		}
 
 		buffer.resize(bufferSize);
 		bufferPointer = reinterpret_cast<IP_ADAPTER_ADDRESSES *>(&buffer[0]);
@@ -72,7 +74,7 @@ Adapters::Adapters(DWORD family, DWORD flags)
 		ss << "Expecting IP_ADAPTER_ADDRESSES to have size " << codeSize << " bytes. "
 			<< "Found structure with size " << systemSize << " bytes.";
 
-		throw std::runtime_error(ss.str());
+		THROW_ERROR(ss.str().c_str());
 	}
 
 	//

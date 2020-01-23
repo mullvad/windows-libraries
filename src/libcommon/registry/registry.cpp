@@ -2,7 +2,6 @@
 #include "registry.h"
 #include "registrypath.h"
 #include <libcommon/error.h>
-#include <stdexcept>
 
 namespace
 {
@@ -36,21 +35,33 @@ void DefaultMoveKey(const common::registry::RegistryPath &source, const common::
 
 	auto status = RegCreateKeyExW(destination.key(), destination.subkey().c_str(), 0, nullptr, 0, KEY_ALL_ACCESS, nullptr, &destHandle, nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Create destination key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Create destination key");
+	}
 
 	status = RegCopyTreeW(source.key(), source.subkey().c_str(), destHandle);
 
 	RegCloseKey(destHandle);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Copy registry key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Copy registry key");
+	}
 
 	status = RegDeleteTreeW(source.key(), source.subkey().c_str());
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source tree");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Clean up source tree");
+	}
 
 	status = RegDeleteKeyW(source.key(), source.subkey().c_str());
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Clean up source key");
+	}
 }
 
 } // anonymous namespace
@@ -67,7 +78,10 @@ std::unique_ptr<RegistryKey> Registry::CreateKey(HKEY key, const std::wstring &s
 
 	const auto status = RegCreateKeyExW(key, subkey.c_str(), 0, nullptr, 0, accessFlags, nullptr, &subkeyHandle, nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Create registry key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Create registry key");
+	}
 
 	return std::make_unique<RegistryKey>(subkeyHandle);
 }
@@ -81,7 +95,10 @@ std::unique_ptr<RegistryKey> Registry::OpenKey(HKEY key, const std::wstring &sub
 
 	const auto status = RegOpenKeyExW(key, subkey.c_str(), 0, accessFlags, &subkeyHandle);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Open registry key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Open registry key");
+	}
 
 	return std::make_unique<RegistryKey>(subkeyHandle);
 }
@@ -105,7 +122,7 @@ void Registry::DeleteKey(HKEY key, const std::wstring &subkey, RegistryView view
 	if (ERROR_SUCCESS != status
 		&& ERROR_FILE_NOT_FOUND != status)
 	{
-		THROW_WITH_CODE("Delete registry key", status);
+		THROW_WINDOWS_ERROR(status, "Delete registry key");
 	}
 }
 
@@ -128,7 +145,10 @@ void Registry::DeleteTree(HKEY key, const std::wstring &subkey, RegistryView vie
 
 		const auto openStatus = RegOpenKeyExW(key, subkey.c_str(), 0, accessFlags, &subkeyHandle);
 
-		THROW_UNLESS(ERROR_SUCCESS, openStatus, "Open registry key for deleting tree");
+		if (ERROR_SUCCESS != openStatus)
+		{
+			THROW_WINDOWS_ERROR(openStatus, "Open registry key for deleting tree");
+		}
 
 		status = RegDeleteTreeW(subkeyHandle, nullptr);
 
@@ -138,7 +158,7 @@ void Registry::DeleteTree(HKEY key, const std::wstring &subkey, RegistryView vie
 	if (ERROR_SUCCESS != status
 		&& ERROR_FILE_NOT_FOUND != status)
 	{
-		THROW_WITH_CODE("Delete registry tree", status);
+		THROW_WINDOWS_ERROR(status, "Delete registry tree");
 	}
 }
 
@@ -158,7 +178,10 @@ std::unique_ptr<RegistryMonitor> Registry::MonitorKey
 
 	const auto status = RegOpenKeyExW(key, subkey.c_str(), 0, accessFlags, &subkeyHandle);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Open registry key for monitoring");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Open registry key for monitoring");
+	}
 
 	RegistryMonitorArguments args;
 
@@ -206,24 +229,39 @@ void Registry::MoveKey
 
  	auto status = RegOpenKeyExW(source.key(), source.subkey().c_str(), 0, KEY_ALL_ACCESS | viewFlag, sourceHandle.get());
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Open source key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Open source key");
+	}
 
 	status = RegCreateKeyExW(destination.key(), destination.subkey().c_str(), 0, nullptr, 0, \
 		KEY_ALL_ACCESS | viewFlag, nullptr, destinationHandle.get(), nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Create destination key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Create destination key");
+	}
 
 	status = RegCopyTreeW(*sourceHandle, nullptr, *destinationHandle);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Copy registry key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Copy registry key");
+	}
 
 	status = RegDeleteTreeW(*sourceHandle, nullptr);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source tree");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Clean up source tree");
+	}
 
 	status = RegDeleteKeyExW(source.key(), source.subkey().c_str(), viewFlag, 0);
 
-	THROW_UNLESS(ERROR_SUCCESS, status, "Clean up source key");
+	if (ERROR_SUCCESS != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Clean up source key");
+	}
 }
 
 }

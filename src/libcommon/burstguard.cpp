@@ -15,14 +15,17 @@ BurstGuard::BurstGuard(Callback callback, uint32_t burstDuration, uint32_t inter
 {
 	m_stateEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
 
-	THROW_GLE_IF(NULL, m_stateEvent, "Create BurstGuard thread state event object");
+	if (NULL == m_stateEvent)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Create BurstGuard thread state event object");
+	}
 
 	const auto t = _beginthreadex(nullptr, 0, BurstGuard::Thread, this, 0, nullptr);
 
 	if (0 == t)
 	{
 		CloseHandle(m_stateEvent);
-		throw std::runtime_error("Failed to create BurstGuard thread");
+		THROW_ERROR("Failed to create BurstGuard thread");
 	}
 
 	m_thread = reinterpret_cast<HANDLE>(t);

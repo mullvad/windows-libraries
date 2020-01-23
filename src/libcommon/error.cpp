@@ -4,7 +4,6 @@
 #include <exception>
 #include <iomanip>
 #include <sstream>
-#include <stdexcept>
 #include <cstring>
 
 namespace common::error {
@@ -37,35 +36,8 @@ const char *IsolateFilename(const char *filepath)
 
 } // anonymous namespace
 
-std::wstring FormatWindowsError(DWORD errorCode)
+std::string FormatWindowsError(DWORD errorCode)
 {
-	LPWSTR buffer;
-
-	auto status = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		nullptr, errorCode, 0, (LPWSTR)&buffer, 0, nullptr);
-
-	if (0 == status)
-	{
-		std::wstringstream ss;
-
-		ss << L"System error 0x" << std::setw(8) << std::setfill(L'0') << std::hex << errorCode;
-
-		return ss.str();
-	}
-
-	auto result = common::string::TrimRight(std::wstring(buffer));
-	LocalFree(buffer);
-
-	return result;
-}
-
-std::string FormatWindowsErrorPlain(DWORD errorCode)
-{
-	//
-	// Duplicated logic, but preferred to converting the string from
-	// wide char to multibyte
-	//
-
 	LPSTR buffer;
 
 	auto status = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -90,17 +62,17 @@ void Throw(const char *operation, DWORD errorCode, const char *file, size_t line
 {
 	std::stringstream ss;
 
-	ss << operation << ": " << common::error::FormatWindowsErrorPlain(errorCode)
+	ss << operation << ": " << common::error::FormatWindowsError(errorCode)
 		<< " (" << IsolateFilename(file) << ": " << line << ")";
 
 	ThrowFormatted(ss.str().c_str());
 }
 
-void Throw(const char *operation, const char *file, size_t line)
+void Throw(const char *message, const char *file, size_t line)
 {
 	std::stringstream ss;
 
-	ss << operation << " (" << IsolateFilename(file) << ": " << line << ")";
+	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
 
 	ThrowFormatted(ss.str().c_str());
 }

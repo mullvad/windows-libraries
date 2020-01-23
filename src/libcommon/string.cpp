@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "string.h"
 #include "memory.h"
+#include "error.h"
 #include <algorithm>
 #include <iomanip>
 #include <optional>
 #include <memory>
 #include <sddl.h>
 #include <sstream>
-#include <stdexcept>
-#include <string>
 #include <wchar.h>
 
 namespace
@@ -70,7 +69,7 @@ std::wstring FormatGuid(const GUID &guid)
 
 	if (status != S_OK)
 	{
-		throw std::runtime_error("Failed to format GUID");
+		THROW_ERROR("Failed to format GUID");
 	}
 
 	std::wstring formatted(buffer);
@@ -88,7 +87,7 @@ std::wstring FormatSid(const SID &sid)
 
 	if (0 == status)
 	{
-		throw std::runtime_error("Failed to format SID");
+		THROW_ERROR("Failed to format SID");
 	}
 
 	std::wstring formatted(buffer);
@@ -238,7 +237,7 @@ std::wstring FormatTime(const FILETIME &filetime)
 
 	if (FALSE == FileTimeToLocalFileTime(&filetime, &ft2))
 	{
-		throw std::runtime_error("Failed to convert time");
+		THROW_ERROR("Failed to convert time");
 	}
 
 	return FormatLocalTime(ft2);
@@ -250,7 +249,7 @@ std::wstring FormatLocalTime(const FILETIME &filetime)
 
 	if (FALSE == FileTimeToSystemTime(&filetime, &st))
 	{
-		throw std::runtime_error("Failed to convert time");
+		THROW_ERROR("Failed to convert time");
 	}
 
 	std::wstringstream ss;
@@ -330,7 +329,7 @@ std::wstring Summary(const std::wstring &str, size_t max)
 
 	if (max < paddingLength)
 	{
-		throw std::runtime_error("Requested summary is too short");
+		THROW_ERROR("Requested summary is too short");
 	}
 
 	auto summary = str.substr(0, max - paddingLength);
