@@ -3,11 +3,62 @@
 #include "memory.h"
 #include <algorithm>
 #include <iomanip>
+#include <optional>
 #include <memory>
 #include <sddl.h>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <wchar.h>
+
+namespace
+{
+
+struct ZeroGroupCount
+{
+	size_t firstIndex;
+	int num;
+};
+
+std::optional<ZeroGroupCount> FindLongestZeroGroupsSequence(const std::vector<uint32_t> &ip)
+{
+	ZeroGroupCount longest = { 0 };
+	ZeroGroupCount candidate = { 0 };
+
+	const auto checkCandidate = [&]() {
+		if (candidate.num > longest.num)
+		{
+			longest = candidate;
+		}
+		candidate = { 0 };
+	};
+
+	for (size_t index = 0; index < ip.size(); index++)
+	{
+		if (0 != ip[index])
+		{
+			checkCandidate();
+		}
+		else
+		{
+			if (0 != candidate.num)
+			{
+				candidate.num++;
+			}
+			else
+			{
+				candidate.firstIndex = index;
+				candidate.num = 1;
+			}
+		}
+	}
+
+	checkCandidate();
+
+	return longest.num > 0 ? std::make_optional(longest) : std::nullopt;
+}
+
+} // anonymous namespace
 
 namespace common::string {
 
@@ -111,26 +162,63 @@ std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
 
 std::wstring FormatIpv6(const uint8_t ip[16])
 {
-	//
-	// TODO: Omit longest sequence of zeros to create compact representation
-	//
+	constexpr uint32_t replacementSymbol = (uint32_t)-1;
 
-	std::wstringstream ss;
-
-	auto wptr = (const uint16_t *)ip;
+	std::vector<uint32_t> ipArray;
+	ipArray.insert(ipArray.end(), (uint16_t *)ip, ((uint16_t *)ip) + 8);
 
 	//
-	// Since this is executing on a little-endian system
-	// the words will be byte swapped when read into registers
+	// Replace longest sequence of zero groups with special symbol
 	//
+	const auto zeroGroup = FindLongestZeroGroupsSequence(ipArray);
 
+	if (zeroGroup.has_value())
+	{
+		if (zeroGroup->num == 8)
+		{
+			// Special case: all zeros
+			return std::wstring(L"::");
+		}
+
+		if (zeroGroup->num > 1)
+		{
+			const auto startIter = ipArray.begin() + zeroGroup->firstIndex + 1;
+			ipArray.erase(
+				startIter,
+				startIter + (zeroGroup->num - 1)
+			);
+		}
+		ipArray[zeroGroup->firstIndex] = replacementSymbol;
+	}
+
+	//
+	// Join into string
+	//
 	const auto swap = ::common::memory::ByteSwap;
 
-	ss	<< std::hex
-		<< swap(*(wptr + 0)) << L':' << swap(*(wptr + 1)) << L':'
-		<< swap(*(wptr + 2)) << L':' << swap(*(wptr + 3)) << L':'
-		<< swap(*(wptr + 4)) << L':' << swap(*(wptr + 5)) << L':'
-		<< swap(*(wptr + 6)) << L':' << swap(*(wptr + 7));
+	std::wstringstream ss;
+	ss << std::hex;
+
+	for (size_t i = 0; i < ipArray.size(); i++)
+	{
+		if (replacementSymbol == ipArray[i])
+		{
+			ss << L':';
+
+			if (i + 1 == ipArray.size())
+			{
+				ss << L':';
+			}
+		}
+		else
+		{
+			if (i > 0)
+			{
+				ss << L':';
+			}
+			ss << swap(static_cast<uint16_t>( ipArray[i] ));
+		}
+	}
 
 	return ss.str();
 }
