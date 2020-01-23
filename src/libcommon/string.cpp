@@ -7,6 +7,7 @@
 #include <sddl.h>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <wchar.h>
 
 namespace common::string {
@@ -111,26 +112,51 @@ std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
 
 std::wstring FormatIpv6(const uint8_t ip[16])
 {
-	//
-	// TODO: Omit longest sequence of zeros to create compact representation
-	//
-
-	std::wstringstream ss;
-
 	auto wptr = (const uint16_t *)ip;
+	std::wstringstream ss;
+	ss << std::hex;
 
 	//
 	// Since this is executing on a little-endian system
 	// the words will be byte swapped when read into registers
 	//
-
 	const auto swap = ::common::memory::ByteSwap;
 
-	ss	<< std::hex
-		<< swap(*(wptr + 0)) << L':' << swap(*(wptr + 1)) << L':'
-		<< swap(*(wptr + 2)) << L':' << swap(*(wptr + 3)) << L':'
-		<< swap(*(wptr + 4)) << L':' << swap(*(wptr + 5)) << L':'
-		<< swap(*(wptr + 6)) << L':' << swap(*(wptr + 7));
+	bool previousZero = false;
+	bool allZeros = true;
+
+	for (int i = 0; i < 8; i++)
+	{
+		uint16_t word = swap(wptr[i]);
+
+		if (0 == word)
+		{
+			previousZero = true;
+		}
+		else
+		{
+			if (previousZero)
+			{
+				ss << L':';
+			}
+			if (i > 0)
+			{
+				ss << L':';
+			}
+			ss << word;
+
+			previousZero = false;
+			allZeros = false;
+		}
+	}
+	if (allZeros)
+	{
+		return std::wstring(L"::");
+	}
+	else if (previousZero)
+	{
+		ss << L':';
+	}
 
 	return ss.str();
 }
