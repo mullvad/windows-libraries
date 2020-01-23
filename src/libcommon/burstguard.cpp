@@ -15,7 +15,7 @@ BurstGuard::BurstGuard(Callback callback, uint32_t burstDuration, uint32_t inter
 {
 	m_stateEvent = CreateEventW(nullptr, TRUE, FALSE, nullptr);
 
-	if (NULL == m_stateEvent)
+	if (nullptr == m_stateEvent)
 	{
 		THROW_WINDOWS_ERROR(GetLastError(), "Create BurstGuard thread state event object");
 	}
