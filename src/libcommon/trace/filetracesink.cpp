@@ -21,7 +21,7 @@ FileTraceSink::FileTraceSink(const std::wstring &file)
 		const auto error = GetLastError();
 		const auto msg = std::string("Failed to create trace file: ").append(common::string::ToAnsi(file));
 
-		THROW_WITH_CODE(msg.c_str(), error);
+		THROW_WINDOWS_ERROR(error, msg.c_str());
 	}
 }
 
@@ -41,7 +41,7 @@ void FileTraceSink::trace(const wchar_t *sender, const wchar_t *message)
 
 	if (FALSE == WriteFile(m_file, encoded.c_str(), static_cast<DWORD>(encoded.size()), &bytesWritten, nullptr))
 	{
-		THROW_GLE("Failed to write trace event to disk");
+		THROW_WINDOWS_ERROR(GetLastError(), "Failed to write trace event to disk");
 	}
 }
 

@@ -3,7 +3,6 @@
 #include "error.h"
 #include <string>
 #include <vector>
-#include <stdexcept>
 #include <winerror.h>
 #include <atlbase.h>
 #include <comutil.h>

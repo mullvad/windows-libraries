@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "process.h"
 #include "../error.h"
-#include <stdexcept>
 #include <filesystem>
 
 #define PSAPI_VERSION 2
@@ -20,7 +19,10 @@ DWORD GetProcessIdFromName(const std::wstring &processName, std::function<bool(c
 
 	const auto enumStatus = K32EnumProcesses(&pids[0], bytesAvailable, &bytesWritten);
 
-	THROW_GLE_IF(FALSE, enumStatus, "Acquire list of PIDs in the system");
+	if (FALSE == enumStatus)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Acquire list of PIDs in the system");
+	}
 
 	size_t numberProcesses = bytesWritten / sizeof(DWORD);
 	pids.resize(numberProcesses);
@@ -52,7 +54,7 @@ DWORD GetProcessIdFromName(const std::wstring &processName, std::function<bool(c
 		}
 	}
 
-	throw std::runtime_error("Could not find named process");
+	THROW_ERROR("Could not find named process");
 }
 
 std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processName,
@@ -68,7 +70,10 @@ std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processNa
 
 	const auto enumStatus = K32EnumProcesses(&pids[0], bytesAvailable, &bytesWritten);
 
-	THROW_GLE_IF(FALSE, enumStatus, "Acquire list of PIDs in the system");
+	if (FALSE == enumStatus)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Acquire list of PIDs in the system");
+	}
 
 	size_t numberProcesses = bytesWritten / sizeof(DWORD);
 	pids.resize(numberProcesses);
@@ -110,7 +115,7 @@ void Run(const std::wstring &path)
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
 	{
-		throw std::runtime_error("Invalid path spec for subprocess");
+		THROW_ERROR("Invalid path specification for subprocess");
 	}
 
 	const auto workingDir = fspath.parent_path();
@@ -122,7 +127,10 @@ void Run(const std::wstring &path)
 	const auto status = CreateProcessW(nullptr, const_cast<wchar_t *>(quotedPath.c_str()),
 		nullptr, nullptr, FALSE, 0, nullptr, workingDir.c_str(), &si, &pi);
 
-	THROW_GLE_IF(FALSE, status, "Launch subprocess");
+	if (FALSE == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Launch subprocess");
+	}
 
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
@@ -135,7 +143,7 @@ void RunInContext(HANDLE securityContext, const std::wstring &path)
 	if (false == fspath.is_absolute()
 		|| false == fspath.has_filename())
 	{
-		throw std::runtime_error("Invalid path spec for subprocess");
+		THROW_ERROR("Invalid path specification for subprocess");
 	}
 
 	const auto workingDir = fspath.parent_path();
@@ -147,7 +155,10 @@ void RunInContext(HANDLE securityContext, const std::wstring &path)
 	const auto status = CreateProcessWithTokenW(securityContext, 0, nullptr,
 		const_cast<wchar_t *>(quotedPath.c_str()), 0, nullptr, workingDir.c_str(), &si, &pi);
 
-	THROW_GLE_IF(FALSE, status, "Launch subprocess");
+	if (FALSE == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Launch subprocess");
+	}
 
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);

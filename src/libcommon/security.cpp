@@ -14,7 +14,11 @@ void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enab
 	LUID privilegeLuid;
 
 	auto status = LookupPrivilegeValueW(nullptr, privilege.c_str(), &privilegeLuid);
-	THROW_GLE_IF(FALSE, status, "Resolve privilege LUID");
+
+	if (FALSE == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Resolve privilege LUID");
+	}
 
 	TOKEN_PRIVILEGES privs;
 
@@ -30,7 +34,7 @@ void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enab
 	//
 	if (FALSE == status || ERROR_SUCCESS != error)
 	{
-		THROW_WITH_CODE("Adjust token privileges", error);
+		THROW_WINDOWS_ERROR(error, "Adjust token privileges");
 	}
 }
 
@@ -44,18 +48,30 @@ void AdjustCurrentThreadTokenPrivilege(const std::wstring &privilege, bool enabl
 	{
 		const auto error = GetLastError();
 
-		THROW_UNLESS(ERROR_NO_TOKEN, error, "Acquire access token for current thread");
+		if (ERROR_NO_TOKEN != error)
+		{
+			THROW_WINDOWS_ERROR(error, "Acquire access token for current thread");
+		}
 
-		THROW_GLE_IF(FALSE, ImpersonateSelf(SecurityImpersonation), "Impersonate self");
+		if (FALSE == ImpersonateSelf(SecurityImpersonation))
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "Impersonate self");
+		}
 
 		sd += []
 		{
-			THROW_GLE_IF(FALSE, RevertToSelf(), "Revert impersonation");
+			if (FALSE == RevertToSelf())
+			{
+				THROW_WINDOWS_ERROR(GetLastError(), "Revert impersonation");
+			}
 		};
 
 		const auto status = OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &token);
 
-		THROW_GLE_IF(FALSE, status, "Acquire access token for current thread");
+		if (FALSE == status)
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "Acquire access token for current thread");
+		}
 	}
 
 	sd += [&token]
@@ -69,7 +85,11 @@ void AdjustCurrentThreadTokenPrivilege(const std::wstring &privilege, bool enabl
 void AdjustCurrentProcessTokenPrivilege(const std::wstring &privilege, bool enable)
 {
 	auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
-	THROW_GLE_IF(NULL, processHandle, "Open handle to own process");
+
+	if (nullptr == processHandle)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Open handle to own process");
+	}
 
 	common::memory::ScopeDestructor sd;
 
@@ -81,7 +101,11 @@ void AdjustCurrentProcessTokenPrivilege(const std::wstring &privilege, bool enab
 	HANDLE processToken;
 
 	const auto status = OpenProcessToken(processHandle, TOKEN_ADJUST_PRIVILEGES, &processToken);
-	THROW_GLE_IF(FALSE, status, "Acquire access token for own process");
+
+	if (FALSE == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Acquire access token for own process");
+	}
 
 	sd += [&processToken]()
 	{
@@ -100,7 +124,10 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 
 	const auto createSidStatus = CreateWellKnownSid(WinBuiltinAdministratorsSid, nullptr, adminSid, &adminSidSize);
 
-	THROW_GLE_IF(FALSE, createSidStatus, "Create SID for BUILTIN\\Administrators");
+	if (FALSE == createSidStatus)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Create SID for BUILTIN\\Administrators");
+	}
 
 	PACL currentAcl;
 	PSECURITY_DESCRIPTOR securityDescriptor;
@@ -117,7 +144,10 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 		&securityDescriptor
 	);
 
-	THROW_UNLESS(ERROR_SUCCESS, getSecurityStatus, "Retrieve DACL for object");
+	if (ERROR_SUCCESS != getSecurityStatus)
+	{
+		THROW_WINDOWS_ERROR(getSecurityStatus, "Retrieve DACL for object");
+	}
 
 	common::memory::ScopeDestructor sd;
 
@@ -139,7 +169,10 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 
 	const auto setEntriesStatus = SetEntriesInAclW(1, &ea, currentAcl, &updatedAcl);
 
-	THROW_UNLESS(ERROR_SUCCESS, setEntriesStatus, "Create updated DACL");
+	if (ERROR_SUCCESS != setEntriesStatus)
+	{
+		THROW_WINDOWS_ERROR(setEntriesStatus, "Create updated DACL");
+	}
 
 	sd += [&updatedAcl]()
 	{
@@ -157,26 +190,38 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 		nullptr
 	);
 
-	THROW_UNLESS(ERROR_SUCCESS, setSecurityStatus, "Apply updated DACL")
+	if (ERROR_SUCCESS != setSecurityStatus)
+	{
+		THROW_WINDOWS_ERROR(setSecurityStatus, "Apply updated DACL");
+	}
 }
 
 UniqueHandle DuplicateSecurityContext(DWORD processId)
 {
 	auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId);
 
-	THROW_GLE_IF(nullptr, processHandle, "Open process");
+	if (nullptr == processHandle)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Open process");
+	}
 
 	HANDLE processToken;
 
 	auto status = OpenProcessToken(processHandle, TOKEN_READ | TOKEN_DUPLICATE, &processToken);
 
-	THROW_GLE_IF(0, status, "Open process token");
+	if (0 == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Open process token");
+	}
 
 	HANDLE duplicatedToken;
 
 	status = DuplicateTokenEx(processToken, MAXIMUM_ALLOWED, nullptr, SecurityImpersonation, TokenPrimary, &duplicatedToken);
 
-	THROW_GLE_IF(FALSE, status, "Duplicate token");
+	if (FALSE == status)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Duplicate token");
+	}
 
 	return UniqueHandle(new HANDLE(duplicatedToken));
 }

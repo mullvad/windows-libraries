@@ -13,7 +13,10 @@ GUID Guid::Generate()
 
 	const auto status = UuidCreate(&u);
 
-	THROW_UNLESS(RPC_S_OK, status, "Generate GUID");
+	if (RPC_S_OK != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Generate GUID");
+	}
 
 	return u;
 }
@@ -25,7 +28,10 @@ GUID Guid::GenerateQuick()
 
 	const auto status = UuidCreateSequential(&u);
 
-	THROW_UNLESS(RPC_S_OK, status, "Generate GUID");
+	if (RPC_S_OK != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Generate GUID");
+	}
 
 	return u;
 }
@@ -61,7 +67,7 @@ GUID Guid::FromString(const std::wstring &guid)
 		}
 		default:
 		{
-			throw std::runtime_error("Invalid GUID format");
+			THROW_ERROR("Invalid GUID format");
 		}
 	}
 
@@ -71,7 +77,10 @@ GUID Guid::FromString(const std::wstring &guid)
 
 	const auto status = UuidFromStringW(lolwindows, &convertedGuid);
 
-	THROW_UNLESS(RPC_S_OK, status, "Convert formatted GUID to raw representation");
+	if (RPC_S_OK != status)
+	{
+		THROW_WINDOWS_ERROR(status, "Convert formatted GUID to raw representation");
+	}
 
 	return convertedGuid;
 }

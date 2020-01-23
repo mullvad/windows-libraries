@@ -6,52 +6,26 @@
 #include <memory>
 #include <windows.h>
 
-#define THROW_IF(unwanted, actual, operation)\
-if(actual == unwanted)\
+#define THROW_WINDOWS_ERROR(errorCode, operation)\
 {\
-	::common::error::Throw(operation, actual, __FILE__, __LINE__);\
+	::common::error::Throw(operation, errorCode, __FILE__, __LINE__);\
 }\
 
-#define THROW_UNLESS(expected, actual, operation)\
-if(actual != expected)\
+#define THROW_ERROR(message)\
 {\
-	::common::error::Throw(operation, actual, __FILE__, __LINE__);\
-}\
-
-#define THROW_GLE_UNLESS(expected, actual, operation)\
-if(actual != expected)\
-{\
-	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
-}\
-
-#define THROW_GLE_IF(unwanted, actual, operation)\
-if(actual == unwanted)\
-{\
-	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
-}\
-
-#define THROW_GLE(operation)\
-{\
-	::common::error::Throw(operation, GetLastError(), __FILE__, __LINE__);\
-}\
-
-#define THROW_UNCONDITIONALLY(operation)\
-{\
-	::common::error::Throw(operation, __FILE__, __LINE__);\
-}\
-
-#define THROW_WITH_CODE(operation, code)\
-{\
-	::common::error::Throw(operation, code, __FILE__, __LINE__);\
+	::common::error::Throw(message, __FILE__, __LINE__);\
 }\
 
 namespace common::error {
 
-std::wstring FormatWindowsError(DWORD errorCode);
-std::string FormatWindowsErrorPlain(DWORD errorCode);
+std::string FormatWindowsError(DWORD errorCode);
 
+//
+// Note: The errorCode argument is a system error code, and will be formatted as such.
+// For custom error codes, embed them in the message and use the overload with fewer arguments.
+//
 [[noreturn]] void Throw(const char *operation, DWORD errorCode, const char *file, size_t line);
-[[noreturn]] void Throw(const char *operation, const char *file, size_t line);
+[[noreturn]] void Throw(const char *message, const char *file, size_t line);
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink);
 
