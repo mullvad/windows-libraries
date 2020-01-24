@@ -57,7 +57,6 @@ std::wstring FormatIpv4(uint32_t ip, uint8_t routingPrefix)
 	return ss.str();
 }
 
-// TODO: Format into compact representation.
 std::wstring FormatIpv6(const uint8_t ip[16]);
 
 // TODO: Fix later if intending to produce user facing strings.
