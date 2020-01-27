@@ -1,18 +1,39 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "libcommon/math.h"
-#include "gtest/gtest.h"
+#include "CppUnitTest.h"
 
-TEST(LibCommonMath, RoundPowerTwoAlreadyEvenMultiple)
-{
-	ASSERT_EQ(::common::math::RoundPowerTwo(sizeof(size_t), sizeof(size_t)), sizeof(size_t));
-}
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-TEST(LibCommonMath, RoundPowerTwoToNextMultiple)
+namespace testlibcommon
 {
-	ASSERT_EQ(::common::math::RoundPowerTwo(sizeof(size_t) + 1, sizeof(size_t)), sizeof(size_t) * 2);
-}
 
-TEST(LibCommonMath, RoundPowerTwoToNextMultipleAgain)
+TEST_CLASS(TestLibCommonMath)
 {
-	ASSERT_EQ(::common::math::RoundPowerTwo((sizeof(size_t) * 2) - 1, sizeof(size_t)), sizeof(size_t) * 2);
+public:
+
+	TEST_METHOD(RoundPowerTwoAlreadyEvenMultiple)
+	{
+		Assert::AreEqual(
+			::common::math::RoundPowerTwo(sizeof(size_t), sizeof(size_t)),
+			sizeof(size_t)
+		);
+	}
+
+	TEST_METHOD(RoundPowerTwoToNextMultiple)
+	{
+		Assert::AreEqual(
+			::common::math::RoundPowerTwo(sizeof(size_t) + 1, sizeof(size_t)),
+			sizeof(size_t) * 2
+		);
+	}
+
+	TEST_METHOD(RoundPowerTwoToNextMultipleAgain)
+	{
+		Assert::AreEqual(
+			::common::math::RoundPowerTwo((sizeof(size_t) * 2) - 1, sizeof(size_t)),
+			sizeof(size_t) * 2
+		);
+	}
+};
+
 }

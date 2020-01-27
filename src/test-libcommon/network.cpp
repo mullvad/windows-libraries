@@ -1,28 +1,41 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "libcommon/network.h"
-#include "gtest/gtest.h"
+#include "CppUnitTest.h"
 
-TEST(LibCommonNetwork, ConvertSlashEightPrefix)
-{
-	ASSERT_EQ(::common::network::MaskFromRoutingPrefix(8), 0xFF000000);
-}
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-TEST(LibCommonNetwork, ConvertSlashTwelvePrefix)
+namespace testlibcommon
 {
-	ASSERT_EQ(::common::network::MaskFromRoutingPrefix(12), 0xFFF00000);
-}
 
-TEST(LibCommonNetwork, ConvertSlashThirtyOnePrefix)
+TEST_CLASS(TestLibCommonNetwork)
 {
-	ASSERT_EQ(::common::network::MaskFromRoutingPrefix(31), 0xFFFFFFFE);
-}
+public:
 
-TEST(LibCommonNetwork, ConvertSlashThirtyTwoPrefix)
-{
-	ASSERT_EQ(::common::network::MaskFromRoutingPrefix(32), 0xFFFFFFFF);
-}
+	TEST_METHOD(ConvertSlashEightPrefix)
+	{
+		Assert::AreEqual(::common::network::MaskFromRoutingPrefix(8), 0xFF000000);
+	}
 
-TEST(LibCommonNetwork, ConvertSlashZeroPrefix)
-{
-	ASSERT_EQ(::common::network::MaskFromRoutingPrefix(0), 0);
+	TEST_METHOD(ConvertSlashTwelvePrefix)
+	{
+		Assert::AreEqual(::common::network::MaskFromRoutingPrefix(12), 0xFFF00000);
+	}
+
+	TEST_METHOD(ConvertSlashThirtyOnePrefix)
+	{
+		Assert::AreEqual(::common::network::MaskFromRoutingPrefix(31), 0xFFFFFFFE);
+	}
+
+	TEST_METHOD(ConvertSlashThirtyTwoPrefix)
+	{
+		Assert::AreEqual(::common::network::MaskFromRoutingPrefix(32), 0xFFFFFFFF);
+	}
+
+	TEST_METHOD(ConvertSlashZeroPrefix)
+	{
+		Assert::AreEqual(::common::network::MaskFromRoutingPrefix(0), 0U);
+	}
+
+};
+
 }

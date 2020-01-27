@@ -1,89 +1,102 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "libcommon/string.h"
-#include "gtest/gtest.h"
+#include "CppUnitTest.h"
 #include <algorithm>
 
-TEST(LibCommonString, JoinNothing)
-{
-	ASSERT_EQ(common::string::Join(std::vector<std::wstring>()), L"");
-}
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-TEST(LibCommonString, JoinSingleElement)
+namespace testlibcommon
 {
-	ASSERT_EQ(common::string::Join(std::vector<std::wstring>() = { L"foobar" }), L"foobar");
-}
 
-TEST(LibCommonString, JoinMultipleElements)
+TEST_CLASS(TestLibCommonString)
 {
-	ASSERT_EQ(common::string::Join(std::vector<std::wstring>() =
-	{ L"foobar", L"foobear" }), L"foobar, foobear");
-}
+public:
 
-TEST(LibCommonString, FormatFlagsNoMatch)
-{
-	std::vector<std::pair<UINT32, std::wstring> > definitions =
+	TEST_METHOD(JoinNothing)
 	{
-		std::make_pair(0x01, L"FLAG_ONE")
-	};
+		Assert::AreEqual(L"", common::string::Join(std::vector<std::wstring>()).c_str());
+	}
 
-	ASSERT_EQ(common::string::FormatFlags(definitions, (UINT32)0x02), L"[...]");
-}
-
-TEST(LibCommonString, FormatFlagsOneMatchOneFlag)
-{
-	std::vector<std::pair<UINT32, std::wstring> > definitions =
+	TEST_METHOD(JoinSingleElement)
 	{
-		std::make_pair(0x01, L"FLAG_ONE")
-	};
+		Assert::AreEqual(L"foobar", common::string::Join(std::vector<std::wstring>() = { L"foobar" }).c_str());
+	}
 
-	ASSERT_EQ(common::string::FormatFlags(definitions, (UINT32)0x01), L"FLAG_ONE");
-}
-
-TEST(LibCommonString, FormatFlagsTwoMatchesTwoFlags)
-{
-	std::vector<std::pair<UINT32, std::wstring> > definitions =
+	TEST_METHOD(JoinMultipleElements)
 	{
-		std::make_pair(0x01, L"FLAG_ONE"),
-		std::make_pair(0x02, L"FLAG_TWO")
-	};
+		Assert::AreEqual(L"foobar, foobear", common::string::Join(std::vector<std::wstring>() =
+			{ L"foobar", L"foobear" }).c_str());
+	}
 
-	ASSERT_EQ(common::string::FormatFlags(definitions, (UINT32)0x03), L"FLAG_ONE, FLAG_TWO");
-}
-
-TEST(LibCommonString, FormatFlagsOneMatchSeveralFlags)
-{
-	std::vector<std::pair<UINT32, std::wstring> > definitions =
+	TEST_METHOD(FormatFlagsNoMatch)
 	{
-		std::make_pair(0x01, L"FLAG_ONE")
-	};
+		std::vector<std::pair<UINT32, std::wstring> > definitions =
+		{
+			std::make_pair(0x01, L"FLAG_ONE")
+		};
 
-	ASSERT_EQ(common::string::FormatFlags(definitions, (UINT32)0x03), L"FLAG_ONE, [...]");
-}
+		Assert::AreEqual(L"[...]", common::string::FormatFlags(definitions, (UINT32)0x02).c_str());
+	}
 
-TEST(LibCommonString, FormatFlagsOneMatchSeveralFlagsManyDefinitions)
-{
-	std::vector<std::pair<UINT32, std::wstring> > definitions =
+	TEST_METHOD(FormatFlagsOneMatchOneFlag)
 	{
-		std::make_pair(0x01, L"FLAG_ONE"),
-		std::make_pair(0x04, L"FLAG_THREE"),
-		std::make_pair(0x08, L"FLAG_FOUR")
-	};
+		std::vector<std::pair<UINT32, std::wstring> > definitions =
+		{
+			std::make_pair(0x01, L"FLAG_ONE")
+		};
 
-	ASSERT_EQ(common::string::FormatFlags(definitions, (UINT32)0x03), L"FLAG_ONE, [...]");
-}
+		Assert::AreEqual(L"FLAG_ONE", common::string::FormatFlags(definitions, (UINT32)0x01).c_str());
+	}
 
-TEST(LibCommonString, FormatIpV4)
-{
-	ASSERT_EQ(common::string::FormatIpv4(0x7f000001), L"127.0.0.1");
-}
-
-TEST(LibCommonString, FormatIpV6)
-{
-	UINT8 ip[] =
+	TEST_METHOD(FormatFlagsTwoMatchesTwoFlags)
 	{
-		0x10, 0x00, 0x20, 0x00, 0x30, 0x00, 0x40, 0x00,
-		0x50, 0x00, 0x60, 0x00, 0x70, 0x00, 0x80, 0x00
-	};
+		std::vector<std::pair<UINT32, std::wstring> > definitions =
+		{
+			std::make_pair(0x01, L"FLAG_ONE"),
+			std::make_pair(0x02, L"FLAG_TWO")
+		};
 
-	ASSERT_EQ(common::string::FormatIpv6(ip), L"1000:2000:3000:4000:5000:6000:7000:8000");
+		Assert::AreEqual(L"FLAG_ONE, FLAG_TWO", common::string::FormatFlags(definitions, (UINT32)0x03).c_str());
+	}
+
+	TEST_METHOD(FormatFlagsOneMatchSeveralFlags)
+	{
+		std::vector<std::pair<UINT32, std::wstring> > definitions =
+		{
+			std::make_pair(0x01, L"FLAG_ONE")
+		};
+
+		Assert::AreEqual(L"FLAG_ONE, [...]", common::string::FormatFlags(definitions, (UINT32)0x03).c_str());
+	}
+
+	TEST_METHOD(FormatFlagsOneMatchSeveralFlagsManyDefinitions)
+	{
+		std::vector<std::pair<UINT32, std::wstring> > definitions =
+		{
+			std::make_pair(0x01, L"FLAG_ONE"),
+			std::make_pair(0x04, L"FLAG_THREE"),
+			std::make_pair(0x08, L"FLAG_FOUR")
+		};
+
+		Assert::AreEqual(L"FLAG_ONE, [...]", common::string::FormatFlags(definitions, (UINT32)0x03).c_str());
+	}
+
+	TEST_METHOD(FormatIpV4)
+	{
+		Assert::AreEqual(L"127.0.0.1", common::string::FormatIpv4(0x7f000001).c_str());
+	}
+
+	TEST_METHOD(FormatIpV6)
+	{
+		UINT8 ip[] =
+		{
+			0x10, 0x00, 0x20, 0x00, 0x30, 0x00, 0x40, 0x00,
+			0x50, 0x00, 0x60, 0x00, 0x70, 0x00, 0x80, 0x00
+		};
+
+		Assert::AreEqual(L"1000:2000:3000:4000:5000:6000:7000:8000", common::string::FormatIpv6(ip).c_str());
+	}
+
+};
+
 }
