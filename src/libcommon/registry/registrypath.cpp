@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "registrypath.h"
 #include <libcommon/string.h>
-#include <stdexcept>
+#include <libcommon/error.h>
 
 namespace common::registry
 {
@@ -12,7 +12,7 @@ RegistryPath::RegistryPath(const std::wstring &path)
 
 	if (pathTokens.size() < 2)
 	{
-		throw std::invalid_argument("Invalid registry path");
+		THROW_ERROR("Invalid registry path");
 	}
 
 	const auto keyName = pathTokens[0];
@@ -69,7 +69,7 @@ RegistryPath::RegistryPath(const std::wstring &path)
 	}
 	else
 	{
-		throw std::invalid_argument("Invalid registry root");
+		THROW_ERROR("Invalid registry root");
 	}
 
 	//

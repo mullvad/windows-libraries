@@ -2,7 +2,6 @@
 #include "filesystem.h"
 #include "string.h"
 #include "error.h"
-#include <stdexcept>
 
 namespace common::fs
 {
@@ -57,7 +56,7 @@ void Mkdir(const std::wstring &path)
 	{
 		auto msg = std::string("Failed to create directory: ").append(common::string::ToAnsi(target));
 
-		throw std::runtime_error(msg.c_str());
+		THROW_ERROR(msg.c_str());
 	}
 }
 
@@ -76,19 +75,23 @@ std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE u
 		return result;
 	}
 
-	throw std::runtime_error("Failed to retrieve \"known folder\" path");
+	THROW_ERROR("Failed to retrieve \"known folder\" path");
 }
 
 ScopedNativeFileSystem::ScopedNativeFileSystem()
 {
-	const auto status = Wow64DisableWow64FsRedirection(&m_context);
-	THROW_GLE_IF(FALSE, status, "Disable file system redirection");
+	if (FALSE == Wow64DisableWow64FsRedirection(&m_context))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Disable file system redirection");
+	}
 }
 
 ScopedNativeFileSystem::~ScopedNativeFileSystem()
 {
-	const auto status = Wow64RevertWow64FsRedirection(m_context);
-	THROW_GLE_IF(FALSE, status, "Revert file system redirection");
+	if (FALSE == Wow64RevertWow64FsRedirection(m_context))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Revert file system redirection");
+	}
 }
 
 }
