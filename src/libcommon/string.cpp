@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include <ip2string.h>
+#include <mstcpip.h>
+#include <ws2ipdef.h>
 #include "string.h"
 #include "memory.h"
 #include "error.h"
@@ -10,52 +13,10 @@
 #include <sstream>
 #include <wchar.h>
 
-namespace
-{
+namespace {
 
-struct ZeroGroupCount
-{
-	size_t firstIndex;
-	int num;
-};
-
-std::optional<ZeroGroupCount> FindLongestZeroGroupsSequence(const std::vector<uint32_t> &ip)
-{
-	ZeroGroupCount longest = { 0 };
-	ZeroGroupCount candidate = { 0 };
-
-	const auto checkCandidate = [&]() {
-		if (candidate.num > longest.num)
-		{
-			longest = candidate;
-		}
-		candidate = { 0 };
-	};
-
-	for (size_t index = 0; index < ip.size(); index++)
-	{
-		if (0 != ip[index])
-		{
-			checkCandidate();
-		}
-		else
-		{
-			if (0 != candidate.num)
-			{
-				candidate.num++;
-			}
-			else
-			{
-				candidate.firstIndex = index;
-				candidate.num = 1;
-			}
-		}
-	}
-
-	checkCandidate();
-
-	return longest.num > 0 ? std::make_optional(longest) : std::nullopt;
-}
+constexpr size_t MAX_IPV4_STRING_LENGTH = 16;
+constexpr size_t MAX_IPV6_STRING_LENGTH = 46;
 
 } // anonymous namespace
 
@@ -134,92 +95,32 @@ std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &de
 }
 
 template<>
-std::wstring FormatIpv4<AddressOrder::HostByteOrder>(uint32_t ip)
+std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
 {
-	std::wstringstream ss;
+	in_addr addr;
+	addr.S_un.S_addr = ip;
 
-	ss << ((ip & 0xFF000000) >> 24) << L'.'
-		<< ((ip & 0x00FF0000) >> 16) << L'.'
-		<< ((ip & 0x0000FF00) >> 8) << L'.'
-		<< ((ip & 0x000000FF));
+	std::vector<wchar_t> ipString(MAX_IPV4_STRING_LENGTH + 1);
+	RtlIpv4AddressToStringW(&addr, ipString.data());
 
-	return ss.str();
+	return ipString.data();
 }
 
 template<>
-std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
+std::wstring FormatIpv4<AddressOrder::HostByteOrder>(uint32_t ip)
 {
-	std::wstringstream ss;
-
-	ss << ((ip & 0x000000FF)) << L'.'
-		<< ((ip & 0x0000FF00) >> 8) << L'.'
-		<< ((ip & 0x00FF0000) >> 16) << L'.'
-		<< ((ip & 0xFF000000) >> 24);
-
-	return ss.str();
+	return FormatIpv4<AddressOrder::NetworkByteOrder>(htonl(ip));
 }
 
 std::wstring FormatIpv6(const uint8_t ip[16])
 {
-	constexpr uint32_t replacementSymbol = (uint32_t)-1;
+	in6_addr addr;
+	std::copy(ip, ip + 16, addr.u.Byte);
 
-	std::vector<uint32_t> ipArray;
-	ipArray.insert(ipArray.end(), (uint16_t *)ip, ((uint16_t *)ip) + 8);
+	std::vector<wchar_t> ipString(MAX_IPV6_STRING_LENGTH + 1);
+	RtlIpv6AddressToStringW(&addr, ipString.data());
 
-	//
-	// Replace longest sequence of zero groups with special symbol
-	//
-	const auto zeroGroup = FindLongestZeroGroupsSequence(ipArray);
-
-	if (zeroGroup.has_value())
-	{
-		if (zeroGroup->num == 8)
-		{
-			// Special case: all zeros
-			return std::wstring(L"::");
-		}
-
-		if (zeroGroup->num > 1)
-		{
-			const auto startIter = ipArray.begin() + zeroGroup->firstIndex + 1;
-			ipArray.erase(
-				startIter,
-				startIter + (zeroGroup->num - 1)
-			);
-		}
-		ipArray[zeroGroup->firstIndex] = replacementSymbol;
-	}
-
-	//
-	// Join into string
-	//
-	const auto swap = ::common::memory::ByteSwap;
-
-	std::wstringstream ss;
-	ss << std::hex;
-
-	for (size_t i = 0; i < ipArray.size(); i++)
-	{
-		if (replacementSymbol == ipArray[i])
-		{
-			ss << L':';
-
-			if (i + 1 == ipArray.size())
-			{
-				ss << L':';
-			}
-		}
-		else
-		{
-			if (i > 0)
-			{
-				ss << L':';
-			}
-			ss << swap(static_cast<uint16_t>( ipArray[i] ));
-		}
-	}
-
-	return ss.str();
+	return ipString.data();
 }
 
 std::wstring FormatIpv6(const uint8_t ip[16], uint8_t routingPrefix)
@@ -304,7 +205,7 @@ std::vector<uint8_t> ToUtf8(const std::wstring &str)
 		CP_UTF8,
 		0,
 		str.c_str(),
-		str.size(),
+		static_cast<int>(str.size()),
 		nullptr,
 		0,
 		nullptr,
@@ -322,9 +223,9 @@ std::vector<uint8_t> ToUtf8(const std::wstring &str)
 		CP_UTF8,
 		0,
 		str.c_str(),
-		str.size(),
+		static_cast<int>(str.size()),
 		reinterpret_cast<char *>(rawString.data()),
-		rawString.size() - 1,
+		static_cast<int>(rawString.size() - 1),
 		nullptr,
 		nullptr
 	))
