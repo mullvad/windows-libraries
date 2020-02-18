@@ -15,6 +15,7 @@
 
 namespace {
 
+constexpr size_t MAX_IPV4_STRING_LENGTH = 16;
 constexpr size_t MAX_IPV6_STRING_LENGTH = 46;
 
 } // anonymous namespace
@@ -94,29 +95,21 @@ std::wstring Join(const std::vector<std::wstring> &parts, const std::wstring &de
 }
 
 template<>
-std::wstring FormatIpv4<AddressOrder::HostByteOrder>(uint32_t ip)
+std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
 {
-	std::wstringstream ss;
+	in_addr addr;
+	addr.S_un.S_addr = ip;
 
-	ss << ((ip & 0xFF000000) >> 24) << L'.'
-		<< ((ip & 0x00FF0000) >> 16) << L'.'
-		<< ((ip & 0x0000FF00) >> 8) << L'.'
-		<< ((ip & 0x000000FF));
+	std::vector<wchar_t> ipString(MAX_IPV4_STRING_LENGTH + 1);
+	RtlIpv4AddressToStringW(&addr, ipString.data());
 
-	return ss.str();
+	return ipString.data();
 }
 
 template<>
-std::wstring FormatIpv4<AddressOrder::NetworkByteOrder>(uint32_t ip)
+std::wstring FormatIpv4<AddressOrder::HostByteOrder>(uint32_t ip)
 {
-	std::wstringstream ss;
-
-	ss << ((ip & 0x000000FF)) << L'.'
-		<< ((ip & 0x0000FF00) >> 8) << L'.'
-		<< ((ip & 0x00FF0000) >> 16) << L'.'
-		<< ((ip & 0xFF000000) >> 24);
-
-	return ss.str();
+	return FormatIpv4<AddressOrder::NetworkByteOrder>(htonl(ip));
 }
 
 std::wstring FormatIpv6(const uint8_t ip[16])
