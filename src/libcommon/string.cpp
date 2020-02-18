@@ -298,6 +298,43 @@ std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &
 	return tokens;
 }
 
+std::vector<uint8_t> ToUtf8(const std::wstring &str)
+{
+	int rawStringLength = WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		str.c_str(),
+		str.size(),
+		nullptr,
+		0,
+		nullptr,
+		nullptr
+	);
+
+	if (0 == rawStringLength)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+	}
+
+	std::vector<uint8_t> rawString(rawStringLength + 1);
+
+	if (0 == WideCharToMultiByte(
+		CP_UTF8,
+		0,
+		str.c_str(),
+		str.size(),
+		reinterpret_cast<char *>(rawString.data()),
+		rawString.size() - 1,
+		nullptr,
+		nullptr
+	))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+	}
+
+	return rawString;
+}
+
 std::string ToAnsi(const std::wstring &str)
 {
 	std::string ansi;

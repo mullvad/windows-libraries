@@ -79,6 +79,7 @@ bool BeginsWith(const std::basic_string<T> &hay, const std::basic_string<T> &nee
 
 std::wstring Lower(const std::wstring &str);
 std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &delimiters);
+std::vector<uint8_t> ToUtf8(const std::wstring &str);
 std::string ToAnsi(const std::wstring &str);
 std::wstring ToWide(const std::string &str);
 
