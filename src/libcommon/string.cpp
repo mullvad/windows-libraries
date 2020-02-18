@@ -206,7 +206,7 @@ std::vector<uint8_t> ToUtf8(const std::wstring &str)
 		CP_UTF8,
 		0,
 		str.c_str(),
-		str.size(),
+		static_cast<int>(str.size()),
 		nullptr,
 		0,
 		nullptr,
@@ -224,9 +224,9 @@ std::vector<uint8_t> ToUtf8(const std::wstring &str)
 		CP_UTF8,
 		0,
 		str.c_str(),
-		str.size(),
+		static_cast<int>(str.size()),
 		reinterpret_cast<char *>(rawString.data()),
-		rawString.size() - 1,
+		static_cast<int>(rawString.size() - 1),
 		nullptr,
 		nullptr
 	))
