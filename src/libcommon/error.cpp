@@ -40,7 +40,7 @@ std::string FormatWindowsError(DWORD errorCode)
 {
 	LPSTR buffer;
 
-	auto status = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+	auto status = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		nullptr, errorCode, 0, (LPSTR)&buffer, 0, nullptr);
 
 	if (0 == status)
