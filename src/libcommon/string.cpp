@@ -18,6 +18,48 @@ namespace {
 constexpr size_t MAX_IPV4_STRING_LENGTH = 16;
 constexpr size_t MAX_IPV6_STRING_LENGTH = 46;
 
+std::vector<uint8_t> ToMultiByte(const std::wstring &str, UINT codePage)
+{
+	if (str.empty())
+	{
+		return std::vector<uint8_t>(1);
+	}
+
+	const size_t mbStringSize = static_cast<size_t>(WideCharToMultiByte(
+		codePage,
+		0,
+		str.c_str(),
+		-1,
+		nullptr,
+		0,
+		nullptr,
+		nullptr
+	));
+
+	if (0 == mbStringSize)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+	}
+
+	std::vector<uint8_t> buffer(mbStringSize);
+
+	if (0 == WideCharToMultiByte(
+		codePage,
+		0,
+		str.c_str(),
+		-1,
+		reinterpret_cast<char *>(buffer.data()),
+		static_cast<int>(mbStringSize),
+		nullptr,
+		nullptr
+	))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+	}
+
+	return buffer;
+}
+
 } // anonymous namespace
 
 namespace common::string {
@@ -201,58 +243,51 @@ std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &
 
 std::vector<uint8_t> ToUtf8(const std::wstring &str)
 {
-	int rawStringLength = WideCharToMultiByte(
-		CP_UTF8,
-		0,
-		str.c_str(),
-		static_cast<int>(str.size()),
-		nullptr,
-		0,
-		nullptr,
-		nullptr
-	);
-
-	if (0 == rawStringLength)
-	{
-		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
-	}
-
-	std::vector<uint8_t> rawString(rawStringLength + 1);
-
-	if (0 == WideCharToMultiByte(
-		CP_UTF8,
-		0,
-		str.c_str(),
-		static_cast<int>(str.size()),
-		reinterpret_cast<char *>(rawString.data()),
-		static_cast<int>(rawString.size() - 1),
-		nullptr,
-		nullptr
-	))
-	{
-		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
-	}
-
-	return rawString;
+	return ToMultiByte(str, CP_UTF8);
 }
 
 std::string ToAnsi(const std::wstring &str)
 {
-	std::string ansi;
-
-	ansi.reserve(str.size());
-
-	std::transform(str.begin(), str.end(), std::back_inserter(ansi), [](wchar_t c)
-	{
-		return (c > 255 ? '?' : static_cast<char>(c));
-	});
-
-	return ansi;
+	const auto bytes = ToMultiByte(str, CP_ACP);
+	return std::string(reinterpret_cast<const char*>(bytes.data()));
 }
 
 std::wstring ToWide(const std::string &str)
 {
-	return std::wstring(str.begin(), str.end());
+	if (str.empty())
+	{
+		return std::wstring();
+	}
+
+	const auto wsLength = static_cast<size_t>(MultiByteToWideChar(
+		CP_ACP,
+		0,
+		str.c_str(),
+		-1,
+		nullptr,
+		0
+	));
+
+	if (0 == wsLength)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+	}
+
+	std::vector<wchar_t> buffer(wsLength);
+
+	if (0 == MultiByteToWideChar(
+		CP_ACP,
+		0,
+		str.c_str(),
+		-1,
+		buffer.data(),
+		static_cast<int>(wsLength)
+	))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+	}
+
+	return buffer.data();
 }
 
 std::wstring Summary(const std::wstring &str, size_t max)
