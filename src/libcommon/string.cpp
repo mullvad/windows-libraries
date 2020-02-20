@@ -18,7 +18,7 @@ namespace {
 constexpr size_t MAX_IPV4_STRING_LENGTH = 16;
 constexpr size_t MAX_IPV6_STRING_LENGTH = 46;
 
-std::vector<uint8_t> ToMultiByte(const std::wstring &str, UINT codePage)
+std::vector<uint8_t> ToMultiByte(const std::wstring &str, UINT codePage, bool throwOnError)
 {
 	if (str.empty())
 	{
@@ -38,7 +38,11 @@ std::vector<uint8_t> ToMultiByte(const std::wstring &str, UINT codePage)
 
 	if (0 == mbStringSize)
 	{
-		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+		if (throwOnError)
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+		}
+		return std::vector<uint8_t>(1);
 	}
 
 	std::vector<uint8_t> buffer(mbStringSize);
@@ -54,7 +58,11 @@ std::vector<uint8_t> ToMultiByte(const std::wstring &str, UINT codePage)
 		nullptr
 	))
 	{
-		THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+		if (throwOnError)
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "WideCharToMultiByte");
+		}
+		return std::vector<uint8_t>(1);
 	}
 
 	return buffer;
@@ -241,18 +249,18 @@ std::vector<std::wstring> Tokenize(const std::wstring &str, const std::wstring &
 	return tokens;
 }
 
-std::vector<uint8_t> ToUtf8(const std::wstring &str)
+std::vector<uint8_t> ToUtf8(const std::wstring &str, bool throwOnError)
 {
-	return ToMultiByte(str, CP_UTF8);
+	return ToMultiByte(str, CP_UTF8, throwOnError);
 }
 
-std::string ToAnsi(const std::wstring &str)
+std::string ToAnsi(const std::wstring &str, bool throwOnError)
 {
-	const auto bytes = ToMultiByte(str, CP_ACP);
+	const auto bytes = ToMultiByte(str, CP_ACP, throwOnError);
 	return std::string(reinterpret_cast<const char*>(bytes.data()));
 }
 
-std::wstring ToWide(const std::string &str)
+std::wstring ToWide(const std::string &str, bool throwOnError)
 {
 	if (str.empty())
 	{
@@ -270,7 +278,11 @@ std::wstring ToWide(const std::string &str)
 
 	if (0 == wsLength)
 	{
-		THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+		if (throwOnError)
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+		}
+		return std::wstring();
 	}
 
 	std::vector<wchar_t> buffer(wsLength);
@@ -284,7 +296,11 @@ std::wstring ToWide(const std::string &str)
 		static_cast<int>(wsLength)
 	))
 	{
-		THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+		if (throwOnError)
+		{
+			THROW_WINDOWS_ERROR(GetLastError(), "MultiByteToWideChar");
+		}
+		return std::wstring();
 	}
 
 	return buffer.data();
