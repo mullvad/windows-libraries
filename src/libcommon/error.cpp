@@ -8,17 +8,24 @@
 
 namespace common::error {
 
+WindowsException::WindowsException(const char *message, uint32_t errorCode)
+	: std::runtime_error(message)
+	, m_errorCode(errorCode)
+{
+}
+
 namespace
 {
 
-[[noreturn]] void ThrowFormatted(const char *msg)
+template<typename ExceptionClass, class ...ArgTs>
+[[noreturn]] void ThrowFormatted(const char *msg, ArgTs... args)
 {
 	if (std::current_exception())
 	{
-		std::throw_with_nested(std::runtime_error(msg));
+		std::throw_with_nested(ExceptionClass(msg, args...));
 	}
 
-	throw std::runtime_error(msg);
+	throw ExceptionClass(msg, args...);
 }
 
 const char *IsolateFilename(const char *filepath)
@@ -65,7 +72,7 @@ void Throw(const char *operation, DWORD errorCode, const char *file, size_t line
 	ss << operation << ": " << common::error::FormatWindowsError(errorCode)
 		<< " (" << IsolateFilename(file) << ": " << line << ")";
 
-	ThrowFormatted(ss.str().c_str());
+	ThrowFormatted<WindowsException>(ss.str().c_str(), errorCode);
 }
 
 void Throw(const char *message, const char *file, size_t line)
@@ -74,7 +81,7 @@ void Throw(const char *message, const char *file, size_t line)
 
 	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
 
-	ThrowFormatted(ss.str().c_str());
+	ThrowFormatted<std::runtime_error>(ss.str().c_str());
 }
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)
