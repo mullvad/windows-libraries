@@ -18,6 +18,19 @@
 
 namespace common::error {
 
+class WindowsException : public std::runtime_error
+{
+public:
+
+	WindowsException(const char *message, uint32_t errorCode);
+
+	DWORD errorCode() const { return m_errorCode; }
+
+private:
+
+	uint32_t m_errorCode;
+};
+
 std::string FormatWindowsError(DWORD errorCode);
 
 //
