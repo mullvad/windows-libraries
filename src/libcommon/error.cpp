@@ -2,6 +2,7 @@
 #include "error.h"
 #include "string.h"
 #include <exception>
+#include <ios>
 #include <iomanip>
 #include <sstream>
 #include <cstring>
@@ -69,7 +70,9 @@ void Throw(const char *operation, DWORD errorCode, const char *file, size_t line
 {
 	std::stringstream ss;
 
-	ss << operation << ": " << common::error::FormatWindowsError(errorCode)
+	ss << operation << ": 0x" << std::setw(8) << std::setfill('0') << std::hex << errorCode
+		<< std::setw(1) << std::dec
+		<< ": " << common::error::FormatWindowsError(errorCode)
 		<< " (" << IsolateFilename(file) << ": " << line << ")";
 
 	ThrowFormatted<WindowsException>(ss.str().c_str(), errorCode);
