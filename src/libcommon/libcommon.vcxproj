@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="binarycomposer.cpp" />
     <ClCompile Include="burstguard.cpp" />
-    <ClCompile Include="com.cpp" />
     <ClCompile Include="error.cpp" />
     <ClCompile Include="fileenumerator.cpp" />
     <ClCompile Include="filesystem.cpp" />
@@ -55,7 +54,6 @@
     <ClInclude Include="binarycomposer.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="burstguard.h" />
-    <ClInclude Include="com.h" />
     <ClInclude Include="error.h" />
     <ClInclude Include="fileenumerator.h" />
     <ClInclude Include="filesystem.h" />
