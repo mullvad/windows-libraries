@@ -4,7 +4,6 @@
 #include <exception>
 #include <ios>
 #include <iomanip>
-#include <sstream>
 #include <cstring>
 
 namespace common::error {
@@ -14,35 +13,6 @@ WindowsException::WindowsException(const char *message, uint32_t errorCode)
 	, m_errorCode(errorCode)
 {
 }
-
-namespace
-{
-
-template<typename ExceptionClass, class ...ArgTs>
-[[noreturn]] void ThrowFormatted(const char *msg, ArgTs... args)
-{
-	if (std::current_exception())
-	{
-		std::throw_with_nested(ExceptionClass(msg, args...));
-	}
-
-	throw ExceptionClass(msg, args...);
-}
-
-const char *IsolateFilename(const char *filepath)
-{
-	const auto slash = strrchr(filepath, '/');
-	const auto backslash = strrchr(filepath, '\\');
-
-	if (nullptr == slash && nullptr == backslash)
-	{
-		return filepath;
-	}
-
-	return max(slash, backslash) + 1;
-}
-
-} // anonymous namespace
 
 std::string FormatWindowsError(DWORD errorCode)
 {
@@ -66,25 +36,28 @@ std::string FormatWindowsError(DWORD errorCode)
 	return result;
 }
 
-void Throw(const char *operation, DWORD errorCode, const char *file, size_t line)
+const char *IsolateFilename(const char *filepath)
+{
+	const auto slash = strrchr(filepath, '/');
+	const auto backslash = strrchr(filepath, '\\');
+
+	if (nullptr == slash && nullptr == backslash)
+	{
+		return filepath;
+	}
+
+	return max(slash, backslash) + 1;
+}
+
+[[noreturn]] void Throw(const char *operation, DWORD errorCode, const char *file, size_t line)
 {
 	std::stringstream ss;
 
 	ss << operation << ": 0x" << std::setw(8) << std::setfill('0') << std::hex << errorCode
 		<< std::setw(1) << std::dec
-		<< ": " << common::error::FormatWindowsError(errorCode)
-		<< " (" << IsolateFilename(file) << ": " << line << ")";
+		<< ": " << common::error::FormatWindowsError(errorCode);
 
-	ThrowFormatted<WindowsException>(ss.str().c_str(), errorCode);
-}
-
-void Throw(const char *message, const char *file, size_t line)
-{
-	std::stringstream ss;
-
-	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
-
-	ThrowFormatted<std::runtime_error>(ss.str().c_str());
+	Throw<WindowsException>(ss.str().c_str(), file, line, errorCode);
 }
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)

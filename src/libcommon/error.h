@@ -4,7 +4,13 @@
 #include <stdexcept>
 #include <string>
 #include <memory>
+#include <sstream>
 #include <windows.h>
+
+#define THROW_ERROR_TYPE(type, message, ...)\
+{\
+	::common::error::Throw<type>(message, __FILE__, __LINE__, __VA_ARGS__);\
+}\
 
 #define THROW_WINDOWS_ERROR(errorCode, operation)\
 {\
@@ -13,7 +19,7 @@
 
 #define THROW_ERROR(message)\
 {\
-	::common::error::Throw(message, __FILE__, __LINE__);\
+	::common::error::Throw<std::runtime_error>(message, __FILE__, __LINE__);\
 }\
 
 namespace common::error {
@@ -32,13 +38,30 @@ private:
 };
 
 std::string FormatWindowsError(DWORD errorCode);
+const char *IsolateFilename(const char *filepath);
+
+template<typename ExceptionClass, class ...ArgTs>
+[[noreturn]] void Throw(const char *message, const char *file, size_t line, ArgTs... args)
+{
+	std::stringstream ss;
+
+	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
+
+	const char *formattedMessage = ss.str().c_str();
+
+	if (std::current_exception())
+	{
+		std::throw_with_nested(ExceptionClass(formattedMessage, args...));
+	}
+
+	throw ExceptionClass(formattedMessage, args...);
+}
 
 //
 // Note: The errorCode argument is a system error code, and will be formatted as such.
 // For custom error codes, embed them in the message and use the overload with fewer arguments.
 //
 [[noreturn]] void Throw(const char *operation, DWORD errorCode, const char *file, size_t line);
-[[noreturn]] void Throw(const char *message, const char *file, size_t line);
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink);
 
