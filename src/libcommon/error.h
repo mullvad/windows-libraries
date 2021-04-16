@@ -47,21 +47,29 @@ template<typename ExceptionClass, class ...ArgTs>
 
 	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
 
-	const char *formattedMessage = ss.str().c_str();
+	const auto formattedMessage = ss.str();
 
 	if (std::current_exception())
 	{
-		std::throw_with_nested(ExceptionClass(formattedMessage, args...));
+		std::throw_with_nested(ExceptionClass(formattedMessage.c_str(), args...));
 	}
 
-	throw ExceptionClass(formattedMessage, args...);
+	throw ExceptionClass(formattedMessage.c_str(), args...);
+}
+
+template<typename ExceptionClass, class ...ArgTs>
+[[noreturn]] void Throw(const std::string &message, const char *file, size_t line, ArgTs... args)
+{
+	Throw<ExceptionClass>(message.c_str(), file, line, args...);
 }
 
 //
 // Note: The errorCode argument is a system error code, and will be formatted as such.
-// For custom error codes, embed them in the message and use the overload with fewer arguments.
+// For custom error codes, embed them in the message and use the `THROW_ERROR` macro.
 //
 [[noreturn]] void Throw(const char *operation, DWORD errorCode, const char *file, size_t line);
+
+[[noreturn]] void Throw(const std::string &operation, DWORD errorCode, const char *file, size_t line);
 
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink);
 

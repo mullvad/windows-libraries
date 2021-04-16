@@ -60,6 +60,11 @@ const char *IsolateFilename(const char *filepath)
 	Throw<WindowsException>(ss.str().c_str(), file, line, errorCode);
 }
 
+[[noreturn]] void Throw(const std::string &operation, DWORD errorCode, const char *file, size_t line)
+{
+	Throw(operation.c_str(), errorCode, file, line);
+}
+
 void UnwindException(const std::exception &err, std::shared_ptr<common::logging::ILogSink> logSink)
 {
 	logSink->error(err.what());
