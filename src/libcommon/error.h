@@ -47,14 +47,14 @@ template<typename ExceptionClass, class ...ArgTs>
 
 	ss << message << " (" << IsolateFilename(file) << ": " << line << ")";
 
-	const char *formattedMessage = ss.str().c_str();
+	const auto formattedMessage = ss.str();
 
 	if (std::current_exception())
 	{
-		std::throw_with_nested(ExceptionClass(formattedMessage, args...));
+		std::throw_with_nested(ExceptionClass(formattedMessage.c_str(), args...));
 	}
 
-	throw ExceptionClass(formattedMessage, args...);
+	throw ExceptionClass(formattedMessage.c_str(), args...);
 }
 
 //
