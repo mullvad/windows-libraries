@@ -62,7 +62,7 @@ void Mkdir(const std::wstring &path)
 
 std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE userToken)
 {
-	PWSTR folder;
+	PWSTR folder = nullptr;
 
 	const auto status = SHGetKnownFolderPath(folderId, flags, userToken, &folder);
 
@@ -74,6 +74,8 @@ std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE u
 
 		return result;
 	}
+
+	CoTaskMemFree(folder);
 
 	THROW_ERROR("Failed to retrieve \"known folder\" path");
 }
