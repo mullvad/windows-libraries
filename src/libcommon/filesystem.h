@@ -9,7 +9,7 @@ namespace common::fs
 
 void Mkdir(const std::wstring &path);
 
-std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags, HANDLE userToken);
+std::wstring GetKnownFolderPath(REFKNOWNFOLDERID folderId, DWORD flags = KF_FLAG_DEFAULT, HANDLE userToken = nullptr);
 
 class ScopedNativeFileSystem
 {
