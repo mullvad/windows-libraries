@@ -9,11 +9,7 @@ namespace common::network
 
 Nci::Nci()
 {
-	const auto systemDir = common::fs::GetKnownFolderPath(
-		FOLDERID_System,
-		KF_FLAG_DEFAULT,
-		nullptr
-	);
+	const auto systemDir = common::fs::GetKnownFolderPath(FOLDERID_System);
 	const auto nciPath = std::filesystem::path(systemDir).append(L"nci.dll");
 
 	m_dllHandle = LoadLibraryW(nciPath.c_str());
