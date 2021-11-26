@@ -28,7 +28,6 @@
     <ClCompile Include="logging\logsink.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="network\adapters.cpp" />
-    <ClCompile Include="network\nci.cpp" />
     <ClCompile Include="process\applicationrunner.cpp" />
     <ClCompile Include="process\process.cpp" />
     <ClCompile Include="registry\registry.cpp" />
@@ -65,7 +64,6 @@
     <ClInclude Include="memory.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="network\adapters.h" />
-    <ClInclude Include="network\nci.h" />
     <ClInclude Include="process\applicationrunner.h" />
     <ClInclude Include="process\process.h" />
     <ClInclude Include="registry\registry.h" />

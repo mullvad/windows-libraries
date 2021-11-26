@@ -7,7 +7,6 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="guid.cpp" />
-    <ClCompile Include="com.cpp" />
     <ClCompile Include="serialization\deserializer.cpp">
       <Filter>serialization</Filter>
     </ClCompile>
@@ -46,9 +45,6 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="burstguard.cpp" />
-    <ClCompile Include="network\nci.cpp">
-      <Filter>network</Filter>
-    </ClCompile>
     <ClCompile Include="process\applicationrunner.cpp">
       <Filter>process</Filter>
     </ClCompile>
@@ -67,7 +63,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="guid.h" />
-    <ClInclude Include="com.h" />
     <ClInclude Include="serialization\deserializer.h">
       <Filter>serialization</Filter>
     </ClInclude>
@@ -120,9 +115,6 @@
       <Filter>network</Filter>
     </ClInclude>
     <ClInclude Include="burstguard.h" />
-    <ClInclude Include="network\nci.h">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="process\applicationrunner.h">
       <Filter>process</Filter>
     </ClInclude>
