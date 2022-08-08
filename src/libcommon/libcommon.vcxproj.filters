@@ -7,12 +7,6 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="network.cpp" />
     <ClCompile Include="guid.cpp" />
-    <ClCompile Include="serialization\deserializer.cpp">
-      <Filter>serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="serialization\serializer.cpp">
-      <Filter>serialization</Filter>
-    </ClCompile>
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="trace\consoletracesink.cpp">
       <Filter>trace</Filter>
@@ -63,15 +57,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="network.h" />
     <ClInclude Include="guid.h" />
-    <ClInclude Include="serialization\deserializer.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="serialization\serializer.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="serialization\typetag.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="macroargument.h" />
     <ClInclude Include="trace\consoletracesink.h">
@@ -123,9 +108,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="serialization">
-      <UniqueIdentifier>{60530505-2146-473a-92fc-9c1883cfaa88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="trace">
       <UniqueIdentifier>{0c82bd88-7f1d-4a6c-b5e7-440e9b5dc96a}</UniqueIdentifier>
     </Filter>

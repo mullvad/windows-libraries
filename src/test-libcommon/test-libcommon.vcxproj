@@ -191,7 +191,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="registry.cpp" />
-    <ClCompile Include="serialization.cpp" />
     <ClCompile Include="string.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -15,9 +15,6 @@
     <ClCompile Include="network.cpp">
       <Filter>tests</Filter>
     </ClCompile>
-    <ClCompile Include="serialization.cpp">
-      <Filter>tests</Filter>
-    </ClCompile>
     <ClCompile Include="string.cpp">
       <Filter>tests</Filter>
     </ClCompile>
