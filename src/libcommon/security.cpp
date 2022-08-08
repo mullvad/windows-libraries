@@ -38,50 +38,6 @@ void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enab
 	}
 }
 
-void AdjustCurrentThreadTokenPrivilege(const std::wstring &privilege, bool enable)
-{
-	HANDLE token;
-
-	common::memory::ScopeDestructor sd;
-
-	if (FALSE == OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &token))
-	{
-		const auto error = GetLastError();
-
-		if (ERROR_NO_TOKEN != error)
-		{
-			THROW_WINDOWS_ERROR(error, "Acquire access token for current thread");
-		}
-
-		if (FALSE == ImpersonateSelf(SecurityImpersonation))
-		{
-			THROW_WINDOWS_ERROR(GetLastError(), "Impersonate self");
-		}
-
-		sd += []
-		{
-			if (FALSE == RevertToSelf())
-			{
-				THROW_WINDOWS_ERROR(GetLastError(), "Revert impersonation");
-			}
-		};
-
-		const auto status = OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &token);
-
-		if (FALSE == status)
-		{
-			THROW_WINDOWS_ERROR(GetLastError(), "Acquire access token for current thread");
-		}
-	}
-
-	sd += [&token]
-	{
-		CloseHandle(token);
-	};
-
-	AdjustTokenPrivilege(token, privilege, enable);
-}
-
 void AdjustCurrentProcessTokenPrivilege(const std::wstring &privilege, bool enable)
 {
 	auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, GetCurrentProcessId());
