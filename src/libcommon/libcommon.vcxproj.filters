@@ -8,15 +8,6 @@
     <ClCompile Include="network.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="filesystem.cpp" />
-    <ClCompile Include="trace\consoletracesink.cpp">
-      <Filter>trace</Filter>
-    </ClCompile>
-    <ClCompile Include="trace\filetracesink.cpp">
-      <Filter>trace</Filter>
-    </ClCompile>
-    <ClCompile Include="trace\trace.cpp">
-      <Filter>trace</Filter>
-    </ClCompile>
     <ClCompile Include="fileenumerator.cpp" />
     <ClCompile Include="security.cpp" />
     <ClCompile Include="registry\registry.cpp">
@@ -56,21 +47,6 @@
     <ClInclude Include="guid.h" />
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="macroargument.h" />
-    <ClInclude Include="trace\consoletracesink.h">
-      <Filter>trace</Filter>
-    </ClInclude>
-    <ClInclude Include="trace\filetracesink.h">
-      <Filter>trace</Filter>
-    </ClInclude>
-    <ClInclude Include="trace\itracesink.h">
-      <Filter>trace</Filter>
-    </ClInclude>
-    <ClInclude Include="trace\trace.h">
-      <Filter>trace</Filter>
-    </ClInclude>
-    <ClInclude Include="trace\xtrace.h">
-      <Filter>trace</Filter>
-    </ClInclude>
     <ClInclude Include="fileenumerator.h" />
     <ClInclude Include="security.h" />
     <ClInclude Include="registry\registry.h">
@@ -102,9 +78,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="trace">
-      <UniqueIdentifier>{0c82bd88-7f1d-4a6c-b5e7-440e9b5dc96a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="registry">
       <UniqueIdentifier>{a916aef5-7d05-4081-ac65-77d6d56365bf}</UniqueIdentifier>
     </Filter>

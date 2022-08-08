@@ -42,9 +42,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="string.cpp" />
-    <ClCompile Include="trace\consoletracesink.cpp" />
-    <ClCompile Include="trace\filetracesink.cpp" />
-    <ClCompile Include="trace\trace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="binarycomposer.h" />
@@ -71,11 +68,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="trace\consoletracesink.h" />
-    <ClInclude Include="trace\filetracesink.h" />
-    <ClInclude Include="trace\itracesink.h" />
-    <ClInclude Include="trace\trace.h" />
-    <ClInclude Include="trace\xtrace.h" />
     <ClInclude Include="valuemapper.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
