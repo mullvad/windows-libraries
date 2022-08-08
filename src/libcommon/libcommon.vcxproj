@@ -32,7 +32,6 @@
     <ClCompile Include="process\process.cpp" />
     <ClCompile Include="registry\registry.cpp" />
     <ClCompile Include="registry\registrykey.cpp" />
-    <ClCompile Include="registry\registrymonitor.cpp" />
     <ClCompile Include="registry\registrypath.cpp" />
     <ClCompile Include="resourcedata.cpp" />
     <ClCompile Include="security.cpp" />
@@ -66,7 +65,6 @@
     <ClInclude Include="process\process.h" />
     <ClInclude Include="registry\registry.h" />
     <ClInclude Include="registry\registrykey.h" />
-    <ClInclude Include="registry\registrymonitor.h" />
     <ClInclude Include="registry\registrypath.h" />
     <ClInclude Include="resourcedata.h" />
     <ClInclude Include="security.h" />

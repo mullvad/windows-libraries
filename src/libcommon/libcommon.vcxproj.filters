@@ -25,9 +25,6 @@
     <ClCompile Include="registry\registrykey.cpp">
       <Filter>registry</Filter>
     </ClCompile>
-    <ClCompile Include="registry\registrymonitor.cpp">
-      <Filter>registry</Filter>
-    </ClCompile>
     <ClCompile Include="registry\registrypath.cpp">
       <Filter>registry</Filter>
     </ClCompile>
@@ -80,9 +77,6 @@
       <Filter>registry</Filter>
     </ClInclude>
     <ClInclude Include="registry\registrykey.h">
-      <Filter>registry</Filter>
-    </ClInclude>
-    <ClInclude Include="registry\registrymonitor.h">
       <Filter>registry</Filter>
     </ClInclude>
     <ClInclude Include="registry\registrypath.h">
