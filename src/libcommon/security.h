@@ -9,7 +9,6 @@ namespace common::security
 {
 
 void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enable = true);
-void AdjustCurrentThreadTokenPrivilege(const std::wstring &privilege, bool enable = true);
 void AdjustCurrentProcessTokenPrivilege(const std::wstring &privilege, bool enable = true);
 
 //

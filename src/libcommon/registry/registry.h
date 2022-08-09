@@ -1,7 +1,6 @@
 #pragma once
 
 #include "registrykey.h"
-#include "registrymonitor.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -42,25 +41,6 @@ public:
 	(
 		HKEY key,
 		const std::wstring &subkey,
-		RegistryView view = RegistryView::Default
-	);
-
-	//
-	// Delete everything below the specified subkey, but not the subkey itself.
-	//
-	static void DeleteTree
-	(
-		HKEY key,
-		const std::wstring &subkey,
-		RegistryView view = RegistryView::Default
-	);
-
-	static std::unique_ptr<RegistryMonitor> MonitorKey
-	(
-		HKEY key,
-		const std::wstring &subkey,
-		const std::vector<RegistryEventFlag> &events,
-		bool monitorTree = false,
 		RegistryView view = RegistryView::Default
 	);
 
