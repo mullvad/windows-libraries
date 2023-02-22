@@ -11,6 +11,8 @@ namespace common::security
 void AdjustTokenPrivilege(HANDLE token, const std::wstring &privilege, bool enable = true);
 void AdjustCurrentProcessTokenPrivilege(const std::wstring &privilege, bool enable = true);
 
+bool IsLocalSystemUser(HANDLE processToken);
+
 //
 // Add built-in group Administrators to DACL with full access.
 //

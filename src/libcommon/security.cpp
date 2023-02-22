@@ -152,6 +152,43 @@ void AddAdminToObjectDacl(const std::wstring &objectName, SE_OBJECT_TYPE objectT
 	}
 }
 
+bool IsLocalSystemUser(HANDLE processToken)
+{
+	DWORD returnLength = 0;
+
+	if (0 != GetTokenInformation(processToken, TokenUser, nullptr, 0, &returnLength))
+	{
+		THROW_ERROR("GetTokenInformation did not return an error");
+	}
+
+	DWORD error = GetLastError();
+
+	if (error != ERROR_INSUFFICIENT_BUFFER)
+	{
+		THROW_WINDOWS_ERROR(error, "GetTokenInformation: Expected ERROR_INSUFFICIENT_BUFFER");
+	}
+
+	std::vector<uint8_t> tokenInfoStorage(returnLength);
+
+	if (0 != GetTokenInformation(processToken, TokenUser, tokenInfoStorage.data(), tokenInfoStorage.size(), &returnLength))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "GetTokenInformation");
+	}
+
+	const auto tokenUser = reinterpret_cast<TOKEN_USER *>(tokenInfoStorage.data());
+
+	std::vector<uint8_t> localSystemSidStorage(MAX_SID_SIZE);
+	SID *localSystemSid = reinterpret_cast<SID *>(localSystemSidStorage.data());
+	DWORD localSystemSidSize = static_cast<DWORD>(localSystemSidStorage.size());
+
+	if (0 == CreateWellKnownSid(WinLocalSystemSid, nullptr, localSystemSid, &localSystemSidSize))
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "CreateWellKnownSid");
+	}
+
+	return 0 != EqualSid(tokenUser->User.Sid, localSystemSid);
+}
+
 UniqueHandle DuplicateSecurityContext(DWORD processId)
 {
 	auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId);
