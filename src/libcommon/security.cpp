@@ -169,13 +169,12 @@ bool IsLocalSystemUser(HANDLE processToken)
 	}
 
 	std::vector<uint8_t> tokenInfoStorage(returnLength);
+	const auto tokenInfo = reinterpret_cast<TOKEN_USER *>(tokenInfoStorage.data());
 
-	if (0 != GetTokenInformation(processToken, TokenUser, tokenInfoStorage.data(), tokenInfoStorage.size(), &returnLength))
+	if (0 != GetTokenInformation(processToken, TokenUser, tokenInfo, tokenInfoStorage.size(), &returnLength))
 	{
 		THROW_WINDOWS_ERROR(GetLastError(), "GetTokenInformation");
 	}
-
-	const auto tokenUser = reinterpret_cast<TOKEN_USER *>(tokenInfoStorage.data());
 
 	std::vector<uint8_t> localSystemSidStorage(MAX_SID_SIZE);
 	SID *localSystemSid = reinterpret_cast<SID *>(localSystemSidStorage.data());
@@ -186,7 +185,7 @@ bool IsLocalSystemUser(HANDLE processToken)
 		THROW_WINDOWS_ERROR(GetLastError(), "CreateWellKnownSid");
 	}
 
-	return 0 != EqualSid(tokenUser->User.Sid, localSystemSid);
+	return 0 != EqualSid(tokenInfo->User.Sid, localSystemSid);
 }
 
 UniqueHandle DuplicateSecurityContext(DWORD processId)
