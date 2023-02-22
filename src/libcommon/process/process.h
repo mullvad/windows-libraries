@@ -24,6 +24,8 @@ struct DefaultProcessNameComparator
 DWORD GetProcessIdFromName(const std::wstring &processName,
 	std::function<bool(const std::wstring &lhs, const std::wstring &rhs)> comp = DefaultProcessNameComparator());
 
+std::unordered_set<DWORD> GetProcesses(std::function<bool(HANDLE processHandle)> shouldInclude);
+
 //
 // N.B this can return an empty set.
 //

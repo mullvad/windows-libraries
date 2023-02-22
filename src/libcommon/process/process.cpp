@@ -108,6 +108,45 @@ std::unordered_set<DWORD> GetAllProcessIdsFromName(const std::wstring &processNa
 	return result;
 }
 
+std::unordered_set<DWORD> GetProcesses(std::function<bool(HANDLE processHandle)> shouldInclude)
+{
+	std::unordered_set<DWORD> result;
+
+	// Allocate heap storage for 512 PIDs.
+	std::vector<DWORD> pids(512);
+
+	const DWORD bytesAvailable = static_cast<DWORD>(pids.size()) * sizeof(DWORD);
+	DWORD bytesWritten;
+
+	const auto enumStatus = K32EnumProcesses(&pids[0], bytesAvailable, &bytesWritten);
+
+	if (FALSE == enumStatus)
+	{
+		THROW_WINDOWS_ERROR(GetLastError(), "Acquire list of PIDs in the system");
+	}
+
+	size_t numberProcesses = bytesWritten / sizeof(DWORD);
+	pids.resize(numberProcesses);
+
+	for (auto process : pids)
+	{
+		auto processHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, process);
+
+		if (NULL == processHandle)
+		{
+			continue;
+		}
+
+		if (shouldInclude(processHandle)) {
+			result.insert(process);
+		}
+
+		CloseHandle(processHandle);
+	}
+
+	return result;
+}
+
 void Run(const std::wstring &path)
 {
 	const auto fspath = std::filesystem::path(path);
