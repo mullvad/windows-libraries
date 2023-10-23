@@ -2,9 +2,23 @@
 #include "filesystem.h"
 #include "string.h"
 #include "error.h"
+#include <mullvad-nsis.h>
 
 namespace common::fs
 {
+
+// Calls into rust to recursively create directories with total access for admins and read-only access for authenticated users.
+// If any or all directories already exists will attempt to set the correct permissions on them and if successful will not error.
+void CreatePrivilegedDirectory(std::filesystem::path path)
+{
+	const wchar_t* w_path = path.wstring().c_str();
+	auto result = create_privileged_directory(reinterpret_cast<const uint16_t*>(w_path));
+
+	if (Status::Ok != result)
+	{
+		THROW_ERROR("Failed to create privileged directory");
+	}
+}
 
 void Mkdir(const std::wstring &path)
 {
@@ -51,7 +65,6 @@ void Mkdir(const std::wstring &path)
 		lastError = (CreateDirectoryW(target.c_str(), nullptr) ? ERROR_SUCCESS : GetLastError());
 	}
 	while (it != dirs.end());
-
 	if (ERROR_SUCCESS != lastError && ERROR_ALREADY_EXISTS != lastError)
 	{
 		auto msg = std::string("Failed to create directory: ").append(common::string::ToAnsi(target));
