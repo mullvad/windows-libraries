@@ -46,8 +46,8 @@ public:
 
 private:
 
-	const ScopeDestructor(const ScopeDestructor &);
-	ScopeDestructor &operator=(const ScopeDestructor &);
+	ScopeDestructor(const ScopeDestructor &) = delete;
+	ScopeDestructor &operator=(const ScopeDestructor &) = delete;
 
 	std::vector<std::function<void()> > m_operations;
 };
